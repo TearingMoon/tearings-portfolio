@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4">
+  <div>
     <span>{{ displayedText }}</span>
     <span class="animate-blink">|</span>
   </div>

@@ -1,5 +1,22 @@
 @import './tailwind.css';
+@import 'animate.css';
 
 body {
   background-color: rgb(23 23 23);
+}
+
+.scrollAnimation_before-enter {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: all 1s ease-out;
+}
+
+.scrollAnimation_enter {
+  opacity: 1;
+  transform: translateY(0px);
+}
+
+body,
+html {
+  cursor: none;
 }

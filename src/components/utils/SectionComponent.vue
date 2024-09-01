@@ -1,6 +1,6 @@
 <template>
   <main>
-    <div class="px-10 mb-10">
+    <div class="px-10 mb-20">
       <slot></slot>
     </div>
   </main>
