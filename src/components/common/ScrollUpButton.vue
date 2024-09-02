@@ -4,7 +4,7 @@
     leave-active-class="animate__animated animate__flipOutX"
   >
     <button
-      class="fixed bottom-10 right-10 rounded-full bg-gray-800 shadow z-50"
+      class="fixed bottom-10 right-10 rounded-full shadow-lg bg-sky-500 z-50"
       @click="scrollToTop"
       v-if="isHidden"
     >

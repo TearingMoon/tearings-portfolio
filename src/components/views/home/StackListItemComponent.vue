@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-800 p-10 shadow-md flex-1">
+  <div class="p-10 border-2 border-white flex-auto md:w-1/3">
     <slot name="content"></slot>
     <h2 class="font-bold text-2xl my-5"><slot name="title"></slot></h2>
     <p class="wordSpacingSm">

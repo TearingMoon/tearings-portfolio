@@ -23,7 +23,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   data() {
     return {
@@ -33,12 +33,12 @@ export default {
       cursorCircleY: 0, // Posición Y del cursor círculo (con retraso)
       isHovering: false, // Estado para saber si está haciendo hover sobre un elemento interactivo
       followSpeed: 0.1, // Velocidad de seguimiento del cursor círculo
-      animationFrameId: null // ID del requestAnimationFrame para cancelar en el unmount
+      animationFrameId: 0 // ID del requestAnimationFrame para cancelar en el unmount
     }
   },
   methods: {
     // Actualiza la posición del cursor
-    updateCursorPosition(event) {
+    updateCursorPosition(event: any) {
       this.cursorX = event.clientX
       this.cursorY = event.clientY
     },
@@ -53,31 +53,31 @@ export default {
     },
     // Muestra el cursor cuando el mouse entra en la ventana
     showCursor() {
-      this.$refs.cursor.style.opacity = 1
-      this.$refs.cursor_circle.style.opacity = 1
+      ;(this.$refs.cursor as HTMLElement).style.opacity = '1'
+      ;(this.$refs.cursor_circle as HTMLElement).style.opacity = '1'
     },
     // Oculta el cursor cuando el mouse sale de la ventana
     hideCursor() {
-      this.$refs.cursor.style.opacity = 0
-      this.$refs.cursor_circle.style.opacity = 0
+      ;(this.$refs.cursor as HTMLElement).style.opacity = '0'
+      ;(this.$refs.cursor_circle as HTMLElement).style.opacity = '0'
     },
     // Cambia el estilo del cursor cuando hace hover sobre un elemento interactivo
     onMouseEnter() {
       this.isHovering = true
-      this.$refs.cursor.style.opacity = 0.5
-      this.$refs.cursor_circle.style.opacity = 0.5
+      ;(this.$refs.cursor as HTMLElement).style.opacity = '0.5'
+      ;(this.$refs.cursor_circle as HTMLElement).style.opacity = '0.5'
     },
     // Restablece el estilo del cursor cuando deja de hacer hover
     onMouseLeave() {
       this.isHovering = false
-      this.$refs.cursor.style.opacity = 1
-      this.$refs.cursor_circle.style.opacity = 1
+      ;(this.$refs.cursor as HTMLElement).style.opacity = '1'
+      ;(this.$refs.cursor_circle as HTMLElement).style.opacity = '1'
     },
     // Función para añadir eventos de hover a elementos interactivos
     addHoverListeners() {
       const interactableElements = document.querySelectorAll('a, button, .interactable')
       interactableElements.forEach((el) => {
-        el.style.cursor = 'none' // Oculta el cursor predeterminado del navegador
+        ;(el as HTMLElement).style.cursor = 'none' // Oculta el cursor predeterminado del navegador
         el.addEventListener('mouseenter', this.onMouseEnter)
         el.addEventListener('mouseleave', this.onMouseLeave)
       })
@@ -86,7 +86,7 @@ export default {
     removeHoverListeners() {
       const interactableElements = document.querySelectorAll('a, button, .interactable')
       interactableElements.forEach((el) => {
-        el.style.cursor = '' // Restaura el cursor predeterminado del navegador
+        ;(el as HTMLElement).style.cursor = '' // Restaura el cursor predeterminado del navegador
         el.removeEventListener('mouseenter', this.onMouseEnter)
         el.removeEventListener('mouseleave', this.onMouseLeave)
       })

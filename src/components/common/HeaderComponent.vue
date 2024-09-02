@@ -18,16 +18,22 @@
       <nav class="text-white p-4">
         <ul class="flex justify-center">
           <li class="mx-2">
-            <router-link to="/" class="hover:underline">Home</router-link>
+            <button to="/" class="hover:underline" @click="scrollToSection('homeSection')">
+              Home
+            </button>
           </li>
           <li class="mx-2">
-            <router-link to="/stack" class="hover:underline">Stack</router-link>
+            <button class="hover:underline" @click="scrollToSection('stackSection')">Stack</button>
           </li>
           <li class="mx-2">
-            <router-link to="/projects" class="hover:underline">Projects</router-link>
+            <button class="hover:underline" @click="scrollToSection('proyectsSection')">
+              Projects
+            </button>
           </li>
           <li class="mx-2">
-            <router-link to="/contact" class="hover:underline">Contact</router-link>
+            <button class="hover:underline" @click="scrollToSection('contactSection')">
+              Contact
+            </button>
           </li>
         </ul>
       </nav>
@@ -35,11 +41,10 @@
   </header>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'HeaderComponent',
   data() {
     return {
       isHidden: false,
@@ -56,6 +61,9 @@ export default defineComponent({
     handleScroll() {
       const currentScrollPosition = window.scrollY
       this.isHidden = currentScrollPosition > 1 // Ajusta este valor según cuando quieras que el header desaparezca
+    },
+    scrollToSection(name: any) {
+      this.$emit('scroll-to-section', name)
     }
   }
 })

@@ -1,8 +1,9 @@
 <template>
   <main>
+    <HeaderComponent @scroll-to-section="scrollToElement($event)" />
     <ScrollUpButton />
     <sectionComponent class="bg-gradient-to-b from-gray-800 to-neutral-900">
-      <div class="w-full h-screen py-10 flex flex-col">
+      <div class="w-full h-screen py-10 flex flex-col" ref="homeSection">
         <div class="flex flex-col justify-center items-center w-full text-white grow">
           <h1 class="font-bold text-5xl md:text-8xl mb-10 text-center">
             <typingEffect text="DAVID TORRUBIA" />
@@ -86,15 +87,23 @@
       </div>
     </sectionComponent>
     <sectionComponent v-scrollAnimation>
-      <div class="mb-10 text-white flex flex-col justify-center items-center">
+      <div class="mb-10 text-white flex flex-col justify-center items-center" ref="stackSection">
         <h2 class="text-6xl font-bold my-10 relative">
           My stack <span class="bg-emerald-400 absolute w-full h-5 right-0 -bottom-2 -z-10"></span>
         </h2>
-        <div class="flex flex-col md:flex-row gap-4">
+        <div class="flex flex-col md:flex-row flex-wrap gap-10">
           <StackListItemComponent>
             <template #content
-              ><video src="../../public/videos/frontEndVideo.mp4" autoplay muted loop></video
-            ></template>
+              ><div class="videoContainerAdjust">
+                <video
+                  src="/videos/frontEndVideo.mp4"
+                  autoplay
+                  muted
+                  loop
+                  class="videoDecoration"
+                ></video>
+              </div>
+            </template>
             <template #title> $ FRONT END </template>
             <template #description>
               Over 2 years of experience in frameworks like
@@ -108,7 +117,14 @@
           </StackListItemComponent>
           <StackListItemComponent>
             <template #content
-              ><video src="../../public/videos/movileDevVideo.mp4" autoplay muted loop></video
+              ><div class="videoContainerAdjust">
+                <video
+                  src="/videos/movileDevVideo.mp4"
+                  autoplay
+                  muted
+                  loop
+                  class="videoDecoration"
+                ></video></div
             ></template>
             <template #title> $ IOS, ANDROID </template>
             <template #description>
@@ -117,9 +133,17 @@
             </template>
           </StackListItemComponent>
           <StackListItemComponent>
-            <template #content
-              ><video src="../../public/videos/backEndVideo.mp4" autoplay muted loop></video
-            ></template>
+            <template #content>
+              <div class="videoContainerAdjust">
+                <video
+                  src="/videos/backEndVideo.mp4"
+                  autoplay
+                  muted
+                  loop
+                  class="videoDecoration"
+                ></video>
+              </div>
+            </template>
             <template #title> $ BACK END </template>
             <template #description>
               Experience with <a href="https://nodejs.org" class="text-green-500">Node.js</a> ,
@@ -128,7 +152,40 @@
               experience with databases like MongoDB, MySQL and PostgreSQL.
             </template>
           </StackListItemComponent>
+          <StackListItemComponent>
+            <template #content>
+              <div class="videoContainerAdjust">
+                <video
+                  src="/videos/desktopVideo.mp4"
+                  autoplay
+                  muted
+                  loop
+                  class="videoDecoration"
+                ></video>
+              </div>
+            </template>
+            <template #title> $ DESKTOP </template>
+            <template #description>
+              Developed desktop applications using
+              <a href="https://electronjs.org/" class="text-yellow-500">Electron</a> framework.
+            </template>
+          </StackListItemComponent>
         </div>
+      </div>
+    </sectionComponent>
+    <sectionComponent v-scrollAnimation>
+      <div class="mb-10 text-white flex flex-col justify-center items-center" ref="proyectsSection">
+        <h2 class="text-6xl font-bold my-10 relative">
+          Proyects <span class="bg-emerald-400 absolute w-full h-5 right-0 -bottom-2 -z-10"></span>
+        </h2>
+        <ProyectsListComponent> </ProyectsListComponent>
+      </div>
+    </sectionComponent>
+    <sectionComponent v-scrollAnimation>
+      <div class="mb-10 text-white flex flex-col justify-center items-center" ref="contactSection">
+        <h2 class="text-6xl font-bold my-10 relative">
+          Contact <span class="bg-emerald-400 absolute w-full h-5 right-0 -bottom-2 -z-10"></span>
+        </h2>
       </div>
     </sectionComponent>
   </main>
@@ -140,6 +197,9 @@ import sectionComponent from '@/components/utils/SectionComponent.vue'
 import typingEffect from '@/components/utils/TypingEffect.vue'
 import ScrollUpButton from '@/components/common/ScrollUpButton.vue'
 import StackListItemComponent from '@/components/views/home/StackListItemComponent.vue'
+import HeaderComponent from '@/components/common/HeaderComponent.vue'
+import ProyectsListComponent from '@/components/views/home/ProyectsListComponent.vue'
+
 export default defineComponent({
   setup() {
     return {}
@@ -148,7 +208,20 @@ export default defineComponent({
     sectionComponent,
     typingEffect,
     ScrollUpButton,
-    StackListItemComponent
+    StackListItemComponent,
+    HeaderComponent,
+    ProyectsListComponent
+  },
+  methods: {
+    scrollToElement(refName: string) {
+      const element = this.$refs[refName] as HTMLElement
+      console.log(element)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' })
+      } else {
+        console.error(`No se encontró el elemento con el ref: ${refName}`)
+      }
+    }
   }
 })
 </script>
@@ -159,5 +232,13 @@ export default defineComponent({
 }
 .wordSpacingSm {
   word-spacing: 0.2em;
+}
+.videoDecoration {
+  box-shadow: 10px 10px rgba(0, 0, 0, 0.5);
+  border: 5px solid black;
+}
+.videoContainerAdjust {
+  padding-right: 10px;
+  padding-bottom: 10px;
 }
 </style>
