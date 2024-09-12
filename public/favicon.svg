@@ -1,0 +1,11 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#34d399; stop-opacity:1" /> <!-- Emerald -->
+      <stop offset="100%" style="stop-color:#38bdf8; stop-opacity:1" /> <!-- Sky blue -->
+    </linearGradient>
+  </defs>
+  <text x="50%" y="50%" font-size="90" font-family="Arial, sans-serif" fill="url(#gradient1)" text-anchor="middle" alignment-baseline="middle" dominant-baseline="middle">
+    D
+  </text>
+</svg>

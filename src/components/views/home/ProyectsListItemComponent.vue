@@ -1,30 +1,47 @@
 <template>
-  <transition
-    enter-active-class="animate__animated animate__fadeIn"
-    leave-active-class="animate__animated animate__fadeOut"
-  >
-    <div
-      v-if="categories.includes(filterCategory)"
-      @click="redirectTo"
-      class="p-10 bg-gray-800 shadow-lg w-2/5 interactable"
-    >
-      <slot name="content"> </slot>
-      <h2 class="font-bold text-2xl my-5 text-center"><slot name="title"></slot></h2>
+  <div class="bg-gray-800 shadow-lg md:w-2/5 flex flex-col">
+    <div class="p-10">
+      <h2
+        class="font-bold text-center text-2xl my-5 flex flex-row items-center justify-center gap-2"
+      >
+        {{ title }}
+        <button v-if="link != ''" @click="redirectTo">
+          <svg
+            class="w-7 h-7 text-white/50 hover:text-white transition duration-150"
+            viewBox="0 0 16 16"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M7.05025 1.53553C8.03344 0.552348 9.36692 0 10.7574 0C13.6528 0 16 2.34721 16 5.24264C16 6.63308 15.4477 7.96656 14.4645 8.94975L12.4142 11L11 9.58579L13.0503 7.53553C13.6584 6.92742 14 6.10264 14 5.24264C14 3.45178 12.5482 2 10.7574 2C9.89736 2 9.07258 2.34163 8.46447 2.94975L6.41421 5L5 3.58579L7.05025 1.53553Z"
+              fill="currentColor"
+            />
+            <path
+              d="M7.53553 13.0503L9.58579 11L11 12.4142L8.94975 14.4645C7.96656 15.4477 6.63308 16 5.24264 16C2.34721 16 0 13.6528 0 10.7574C0 9.36693 0.552347 8.03344 1.53553 7.05025L3.58579 5L5 6.41421L2.94975 8.46447C2.34163 9.07258 2 9.89736 2 10.7574C2 12.5482 3.45178 14 5.24264 14C6.10264 14 6.92742 13.6584 7.53553 13.0503Z"
+              fill="currentColor"
+            />
+            <path
+              d="M5.70711 11.7071L11.7071 5.70711L10.2929 4.29289L4.29289 10.2929L5.70711 11.7071Z"
+              fill="currentColor"
+            />
+          </svg>
+        </button>
+      </h2>
       <p>
         <strong>Description:</strong>
-        <slot name="description"></slot>
+        {{ description }}
       </p>
       <p>
         <strong>Technologies:</strong>
-        <slot name="technologies"></slot>
+        {{ technologies }}
       </p>
-      <div class="flex flex-row gap-4 flex-wrap mt-5">
+      <div class="flex flex-row gap-4 flex-wrap mt-5 mb-4">
         <div class="border-2 p-2" v-for="(category, index) in categories" :key="index">
           {{ category }}
         </div>
       </div>
     </div>
-  </transition>
+  </div>
 </template>
 
 <script lang="ts">
@@ -38,14 +55,23 @@ export default defineComponent({
     return {}
   },
   props: {
+    title: {
+      type: String,
+      required: true
+    },
+    description: {
+      type: String,
+      required: true
+    },
+    technologies: {
+      type: String,
+      required: true
+    },
     categories: {
       type: Array,
       required: true
     },
-    filterCategory: {
-      type: String,
-      required: true
-    },
+
     link: {
       type: String,
       required: false

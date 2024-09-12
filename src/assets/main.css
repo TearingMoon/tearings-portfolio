@@ -3,6 +3,7 @@
 
 body {
   background-color: rgb(23 23 23);
+  text-align: justify;
 }
 
 .scrollAnimation_before-enter {

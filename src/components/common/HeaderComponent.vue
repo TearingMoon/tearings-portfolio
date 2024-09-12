@@ -6,15 +6,15 @@
       isHidden ? '-translate-y-full' : 'translate-y-0'
     ]"
   >
-    <div class="text-white">
+    <div class="text-white w-full sm:w-auto">
       <h1
-        class="text-2xl font-bold bg-gradient-to-r from-sky-500 to-emerald-400 inline-block text-transparent bg-clip-text"
+        class="text-center sm:text-start w-full sm:w-auto text-2xl font-bold bg-gradient-to-r from-sky-500 to-emerald-400 inline-block text-transparent bg-clip-text"
       >
         DavidTorrubia.dev
       </h1>
     </div>
 
-    <div class="ml-auto">
+    <div class="hidden ml-auto sm:block">
       <nav class="text-white p-4">
         <ul class="flex justify-center">
           <li class="mx-2">
