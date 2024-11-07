@@ -204,7 +204,7 @@
               />
             </svg>
           </a>
-          <a href="mailto:davidtorrubiasantos@gmail.com?Subject=I%20wanna%20Hire%20You!!!">
+          <a href="mailto:davidtorrubiadev@gmail.com?Subject=I%20wanna%20Hire%20You!!!">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
