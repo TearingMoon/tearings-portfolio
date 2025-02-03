@@ -2,7 +2,7 @@
   <main>
     <HeaderComponent @scroll-to-section="scrollToElement($event)" />
     <ScrollUpButton />
-    <sectionComponent class="bg-gradient-to-b from-gray-800 to-neutral-900">
+    <sectionComponent class="bg-linear-to-b from-gray-800 to-neutral-900">
       <div class="w-full h-screen py-10 flex flex-col" ref="homeSection">
         <div class="flex flex-col justify-center items-center w-full text-white grow">
           <h1 class="font-bold text-5xl md:text-8xl mb-10 text-center">
@@ -185,7 +185,7 @@
     <sectionComponent v-scrollAnimation>
       <div class="px-10 text-white flex flex-col items-center justify-center" ref="contactSection">
         <h1
-          class="text-3xl sm:text-8xl my-10 font-bold bg-gradient-to-r from-sky-500 to-emerald-400 inline-block text-transparent bg-clip-text"
+          class="text-3xl sm:text-8xl my-10 font-bold bg-linear-to-r from-sky-500 to-emerald-400 inline-block text-transparent bg-clip-text"
         >
           Wanna hire me?
         </h1>

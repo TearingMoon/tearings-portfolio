@@ -8,7 +8,7 @@
   >
     <div class="text-white w-full sm:w-auto">
       <h1
-        class="text-center sm:text-start w-full sm:w-auto text-2xl font-bold bg-gradient-to-r from-sky-500 to-emerald-400 inline-block text-transparent bg-clip-text"
+        class="text-center sm:text-start w-full sm:w-auto text-2xl font-bold bg-linear-to-r from-sky-500 to-emerald-400 inline-block text-transparent bg-clip-text"
       >
         DavidTorrubia.dev
       </h1>
