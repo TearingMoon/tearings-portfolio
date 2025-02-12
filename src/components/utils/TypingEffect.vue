@@ -17,7 +17,6 @@ export default defineComponent({
     return {
       displayedText: '',
       currentIndex: 0,
-      typingSpeed: 100,
       showCursor: true
     }
   },
@@ -29,6 +28,10 @@ export default defineComponent({
     text: {
       type: String,
       required: true
+    },
+    typingSpeed: {
+      type: Number,
+      default: 100
     }
   },
 
