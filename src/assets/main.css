@@ -2,7 +2,7 @@
 @import 'animate.css';
 
 body {
-  background-color: #171717;
+  background-color: var(--color-neutral-900);
   text-align: justify;
 }
 

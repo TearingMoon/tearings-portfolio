@@ -35,7 +35,7 @@
             />
           </circle>
         </svg>
-        <h1 class="text-4xl font-extrabold text-white absolute">Loading</h1>
+        <h1 class="sm:text-4xl font-extrabold text-white absolute">Loading</h1>
       </div>
     </transition>
 
@@ -50,8 +50,13 @@
               <pattern id="grid" patternUnits="userSpaceOnUse" width="80" height="80">
                 <path d="M 80 0 L 0 0 0 80" fill="none" stroke="currentColor" stroke-width="1" />
               </pattern>
+              <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" style="stop-color: var(--color-neutral-900); stop-opacity: 0" />
+                <stop offset="100%" style="stop-color: var(--color-neutral-900); stop-opacity: 1" />
+              </linearGradient>
             </defs>
             <rect width="100%" height="100%" fill="url(#grid)" />
+            <rect width="100%" height="100%" fill="url(#fade)" />
           </svg>
         </div>
       </div>
@@ -59,7 +64,7 @@
     <TypingEffect
       ref="nameTypingEffect"
       text="David Torrubia"
-      class="text-8xl font-extrabold text-white z-10 my-4"
+      class="text-6xl sm:text-8xl font-extrabold text-white z-10 my-4 text-center"
       @doneTyping="finishTyping"
       :auto-start="false"
       v-if="secondPhase"
@@ -68,7 +73,7 @@
       enter-active-class="animate__animated animate__flipInX"
       leave-active-class="animate__animated animate__flipOutX"
     >
-      <h1 class="text-white text-2xl z-10" v-if="thirdPhase">
+      <h1 class="text-white sm:text-2xl z-10 w-full text-center" v-if="thirdPhase">
         Software Engineer | Full Stack Developer
       </h1>
     </Transition>
@@ -88,6 +93,8 @@ const firstPhase = ref(true)
 const secondPhase = ref(false)
 const thirdPhase = ref(false)
 
+const emit = defineEmits(['animationEnd'])
+
 function startTyping() {
   if (animate.value) {
     animate.value?.removeEventListener('endEvent', startTyping)
@@ -105,6 +112,7 @@ function startTyping() {
 
 function finishTyping() {
   thirdPhase.value = true
+  emit('animationEnd')
 }
 
 onMounted(() => {
