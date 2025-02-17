@@ -1,5 +1,5 @@
 <template>
-  <SectionComponent class="w-full h-screen flex flex-col justify-center items-center">
+  <SectionComponent class="relative w-full h-screen flex flex-col justify-center items-center">
     <transition
       enter-active-class="animate__animated animate__fadeIn"
       leave-active-class="animate__animated animate__fadeOut"
@@ -77,12 +77,24 @@
         Software Engineer | Full Stack Developer
       </h1>
     </Transition>
+    <transition
+      enter-active-class="animate__animated animate__flipInX"
+      leave-active-class="animate__animated animate__flipOutX"
+    >
+      <div
+        class="absolute text-white bottom-4 flex flex-col justify-center items-center z-10"
+        v-if="thirdPhase"
+      >
+        <ChevronDoubleDownIcon class="size-10 text-white animate__animated animate__bounce animate__infinite"></ChevronDoubleDownIcon>
+      </div>
+    </transition>
   </SectionComponent>
 </template>
 
 <script setup lang="ts">
 import TypingEffect from '@/components/utils/TypingEffect.vue'
 import SectionComponent from '@/components/utils/SectionComponent.vue'
+import { ChevronDoubleDownIcon } from '@heroicons/vue/16/solid'
 import { onMounted, ref, useTemplateRef } from 'vue'
 
 const nameTypingEffect = useTemplateRef('nameTypingEffect')
