@@ -74,13 +74,13 @@ const commands = [
   new command(
     'contact.sh',
     'Shows contact me',
-    () => console.log('contact'),
+    () => workInProgressCommand(),
     commandType.EXECUTABLE
   ),
   new command(
     'projects.sh',
     'Shows projects',
-    () => console.log('projects'),
+    () => workInProgressCommand(),
     commandType.EXECUTABLE
   ),
   new command('help', 'Shows available commands', () => helpCommand()),
@@ -157,6 +157,14 @@ function aboutCommand() {
   if (consoleContainer.value) {
     consoleContainer.value.innerHTML += `<span class="text-xl font-bold">About me </span><br>`
     consoleContainer.value.innerHTML += `I'm a software engineer, Videogame developer and full stack developer passionate about technology and I love to learn new things and share my knowledge with others. I'm always looking for new challenges and opportunities to grow as a professional in this awesome world of technology. <br>`
+    consoleContainer.value.innerHTML += ` <br>`
+  }
+}
+
+function workInProgressCommand() {
+  if (consoleContainer.value) {
+    consoleContainer.value.innerHTML += `<span class="text-xl font-bold">Work in progress </span><br>`
+    consoleContainer.value.innerHTML += `This command is still in development, please try again later. <br>`
     consoleContainer.value.innerHTML += ` <br>`
   }
 }
