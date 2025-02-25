@@ -1,12 +1,21 @@
 <template>
   <div
     class="w-full border-2 border-neutral-800 flex flex-col rounded-2xl box-content shadow-md h-full shadow-black overflow-hidden bg-black"
+    @click="ConsoleClicked"
   >
+    <!-- Hidden input -->
+    <input
+      type="text"
+      class="absolute -top-10 left-0 w-0 h-0 opacity-0"
+      v-model="hiddenInputText"
+      @keydown="handleKeydown"
+      ref="hiddenInput"
+      autofocus
+    />
     <!-- Header Container -->
     <div class="w-full h-10 bg-neutral-700 shadow flex flex-row items-center px-5">
       <h1 class="text-neutral-400 md:text-lg">/usr/local/bin/{{ currentProgram }}</h1>
       <!-- Remove this button -->
-      <button @click="clearConsole" class="ml-auto">Clear Console</button>
       <svg width="40" height="10" xmlns="http://www.w3.org/2000/svg" class="ml-auto">
         <circle cx="5" cy="5" r="5" fill="yellow" />
         <circle cx="20" cy="5" r="5" fill="green" />
@@ -14,43 +23,34 @@
       </svg>
     </div>
     <!-- Console Container -->
-    <div
-      class="h-full p-5 overflow-y-auto flex flex-col customScrolbar"
-      ref="consoleContainer"
-    ></div>
+    <div class="h-full p-5 overflow-y-auto flex flex-col customScrolbar"></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, useTemplateRef, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 const currentProgram = ref('AboutMe')
 
-const consoleDisplayedData = ref([])
-const consoleContainer = useTemplateRef('consoleContainer')
+const hiddenInputText = ref('')
 
-function clearConsole() {
-  if (consoleContainer.value) {
-    consoleContainer.value.innerHTML = ''
+onMounted(() => {})
+
+const handleKeydown = (event: KeyboardEvent) => {
+  if (event.key === 'Enter') {
+    executeCommand()
   }
 }
 
-function promptInteraction() {}
-
-function showError(error: string) {}
-
-function appendToConsole(data: string) {
-  if (consoleContainer.value) {
-    consoleContainer.value.innerHTML += data
-    consoleContainer.value.scrollTop = consoleContainer.value.scrollHeight
-  }
+function executeCommand() {
+  console.log('Command executed')
+  console.log(hiddenInputText.value)
 }
 
-onMounted(() => {
-  promptInteraction()
-  for (let i = 0; i < 30; i++) {
-    appendToConsole(`<div>Line ${i}<div>`)
-  }
-})
+function ConsoleClicked() {
+  console.log('Console clicked')
+  const hiddenInput = document.getElementById('hiddenInput')
+  hiddenInput?.focus()
+}
 </script>
 
 <style scoped>

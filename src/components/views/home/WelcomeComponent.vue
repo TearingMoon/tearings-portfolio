@@ -85,7 +85,9 @@
         class="absolute text-white bottom-4 flex flex-col justify-center items-center z-10"
         v-if="thirdPhase"
       >
-        <ChevronDoubleDownIcon class="size-10 text-white animate__animated animate__bounce animate__infinite"></ChevronDoubleDownIcon>
+        <ChevronDoubleDownIcon
+          class="size-10 text-white animate__animated animate__bounce animate__infinite"
+        ></ChevronDoubleDownIcon>
       </div>
     </transition>
   </SectionComponent>
