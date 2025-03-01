@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-full relative border-2 border-neutral-800 flex flex-col rounded-2xl box-content shadow-md h-full shadow-black overflow-hidden bg-black"
+    class="w-full relative border-2 border-neutral-800 flex flex-col rounded-2xl box-content shadow-md h-full shadow-black overflow-hidden bg-black text-white"
     @click="ConsoleClicked"
   >
     <!-- Hidden input -->
