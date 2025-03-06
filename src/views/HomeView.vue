@@ -21,15 +21,16 @@
     </Transition>
     <WelcomeComponent @animation-end="showHeader = true" />
     <AboutComponent />
-    <SectionComponent class="h-screen sm:px-52 py-20"> <LinuxConsoleComponent /> </SectionComponent>
+    <ProjectsComponent />
+    <ContactComponent />
   </main>
 </template>
 
 <script lang="ts" setup>
 import WelcomeComponent from '@/components/views/home/WelcomeComponent.vue'
 import AboutComponent from '@/components/views/home/AboutComponent.vue'
-import SectionComponent from '@/components/utils/SectionComponent.vue'
-import LinuxConsoleComponent from '@/components/views/home/LinuxConsoleComponent.vue'
+import ProjectsComponent from '@/components/views/home/ProjectsComponent.vue'
+import ContactComponent from '@/components/views/home/ContactComponent.vue'
 import { ref } from 'vue'
 
 const showHeader = ref(false)
