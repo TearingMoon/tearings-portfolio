@@ -1,39 +1,45 @@
 <template>
-  <main class="flex flex-row items-center justify-center h-screen w-screen">
-    <p class="absolute bottom-0 text-green-700">Connection from: {{ ip }}</p>
+  <main class="flex flex-col md:flex-row items-center justify-center h-screen w-screen">
+    <p class="absolute bottom-0 text-green-700 text-xs md:text-lg">
+      Connection from: {{ ip }} - Secure connection established
+    </p>
 
     <!-- Map -->
-    <div class="w-3/4 p-10 h-full flex items-center justify-center">
+    <div class="w-full md:w-3/4 p-10 h-full flex items-center justify-center">
       <div
         ref="map"
-        class="border-2 h-full w-full border-green-500 bg-[url(https://thumbs.dreamstime.com/b/correspondencia-topogr%C3%A1fica-abstracta-16531890.jpg)] bg-cover bg-center transition-all duration-500"
+        class="border-2 h-full w-full border-green-500 transition-all duration-500"
         :class="[isDisplayClosed ? 'max-h-0' : 'max-h-full']"
-      ></div>
+      >
+        <MapComponent />
+      </div>
     </div>
     <!-- Buttons -->
-    <div class="flex flex-col items-center justify-center gap-4 w-1/4 h-full">
+    <div
+      class="items-center md:gap-4 w-full md:w-1/4 md:h-full md:pl-0 px-10 pb-10 md:py-10 justify-center md:justify-normal grid grid-cols-2 md:grid-cols-1 gap-4"
+    >
       <button
-        class="text-green-500 text-4xl border-2 p-2 border-green-500 hover:bg-green-500 hover:text-neutral-900 w-2/3 font-bold hover:cursor-pointer"
+        class="text-green-500 md:text-4xl border-2 p-2 border-green-500 hover:bg-green-500 hover:text-neutral-900 font-bold hover:cursor-pointer w-full h-full"
       >
         Uplink
       </button>
       <button
-        class="text-green-500 text-4xl border-2 p-2 border-green-500 hover:bg-green-500 hover:text-neutral-900 w-2/3 font-bold hover:cursor-pointer"
+        class="text-green-500 md:text-4xl border-2 p-2 border-green-500 hover:bg-green-500 hover:text-neutral-900 font-bold hover:cursor-pointer w-full h-full"
       >
         Operations
       </button>
       <button
-        class="text-green-500 text-4xl border-2 p-2 border-green-500 hover:bg-green-500 hover:text-neutral-900 w-2/3 font-bold hover:cursor-pointer"
+        class="text-green-500 md:text-4xl border-2 p-2 border-green-500 hover:bg-green-500 hover:text-neutral-900 font-bold hover:cursor-pointer w-full h-full"
       >
         Systems
       </button>
       <button
-        class="text-green-500 text-4xl border-2 p-2 border-green-500 hover:bg-green-500 hover:text-neutral-900 w-2/3 font-bold hover:cursor-pointer"
+        class="text-green-500 md:text-4xl border-2 p-2 border-green-500 hover:bg-green-500 hover:text-neutral-900 font-bold hover:cursor-pointer w-full h-full"
       >
         Intel
       </button>
       <button
-        class="text-green-500 text-4xl border-2 p-2 border-green-500 hover:bg-green-500 hover:text-neutral-900 w-2/3 font-bold hover:cursor-pointer"
+        class="text-green-500 md:text-4xl border-2 p-2 border-green-500 hover:bg-green-500 hover:text-neutral-900 font-bold hover:cursor-pointer w-full h-full"
       >
         Alerts
       </button>
@@ -42,6 +48,7 @@
 </template>
 
 <script setup lang="ts">
+import MapComponent from './MapComponent.vue'
 import { onMounted } from 'vue'
 import { ref } from 'vue'
 

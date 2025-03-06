@@ -44,7 +44,7 @@ console.log(
 }
 
 .flicker {
-  /* animation: flicker 0.15s infinite alternate; */ /* Uncomment this line to enable flicker effect */
+  /*animation: flicker 0.15s infinite alternate; /* Uncomment this line to enable flicker effect */
 }
 
 .crt-screen {

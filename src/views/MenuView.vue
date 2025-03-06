@@ -17,10 +17,17 @@
 import LoadingScreen from '@/components/views/Home/LoadingScreen.vue'
 import SplashScreen from '@/components/views/Home/SplashScreen.vue'
 import MainMenuScreen from '@/components/views/Home/MainMenuScreen.vue'
+import { useRoute } from 'vue-router'
 import { ref } from 'vue'
+
+const route = useRoute()
 
 const hasFinishedLoading = ref(false)
 const hasFinishedSpash = ref(false)
+if (route.params.startAnimation) {
+  hasFinishedLoading.value = true
+  hasFinishedSpash.value = true
+}
 </script>
 
 <style scoped></style>
