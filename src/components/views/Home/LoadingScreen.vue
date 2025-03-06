@@ -1,42 +1,74 @@
 <template>
   <main
-    class="w-screen h-screen flex items-center justify-center font-bold text-green-500 text-4xl"
+    class="w-screen h-screen flex flex-col items-center justify-center font-bold text-green-500 text-4xl gap-4"
   >
     <div ref="lateralLoadingInfo" class="absolute top-0 left-0 flex flex-col text-xs gap-0">
-      <span v-for="(text, index) in displayedText" :key="index" class="m-0 text-green-700">{{ text }}</span>
+      <span v-for="(text, index) in displayedText" :key="index" class="m-0 text-green-700">{{
+        text
+      }}</span>
     </div>
 
-    <h1>Starting{{ startingDots }}</h1>
+    <h1>Starting{{ dots }}</h1>
+    <LoadingBarComponent :currentProgress="loadingBarProgress" class="w-2/3" />
   </main>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, useTemplateRef } from 'vue'
+import { onMounted, ref } from 'vue'
+import LoadingBarComponent from '@/components/utils/LoadingBarComponent.vue'
 
-const startingDots = ref('')
-const lateralLoadingInfo = useTemplateRef('lateralLoadingInfo')
+const dots = ref('')
 const displayedText = ref<string[]>([])
+const loadingBarProgress = ref(0)
+
+const emit = defineEmits({
+  'finished-loading': () => true
+})
+
+const props = defineProps({
+  maxMessages: {
+    type: Number,
+    default: 10
+  }
+})
 
 onMounted(() => {
-  setInterval(() => {
-    startingDots.value += '.'
-    if (startingDots.value.length > 3) {
-      startingDots.value = ''
+  //Add dots to the loading message
+  const dotsInterval = setInterval(() => {
+    dots.value += '.'
+    if (dots.value.length > 3) {
+      dots.value = ''
     }
-  }, 500)
+  }, 250)
 
-  const maxMessages = 20
+  ///Add random loading messages
   let messageAmmount = 0
-
-  setInterval(() => {
+  const loadingMessageInterval = setInterval(() => {
     if (displayedText.value) {
       displayedText.value = displayedText.value.concat(GetRandomLoadingMessage())
       messageAmmount++
 
-      if (messageAmmount > maxMessages) {
+      if (messageAmmount > props.maxMessages) {
         displayedText.value = []
         messageAmmount = 0
       }
+    }
+  }, 100)
+
+  //Add progress to the loading bar
+  const loadingBarInterval = setInterval(() => {
+    //Add random progress to the loading bar
+    if (loadingBarProgress.value < 100) {
+      loadingBarProgress.value += Math.floor(Math.random() * 10)
+    }
+
+    if (loadingBarProgress.value >= 100) {
+      setTimeout(() => {
+        emit('finished-loading')
+      }, 1000)
+      clearInterval(loadingBarInterval)
+      clearInterval(loadingMessageInterval)
+      clearInterval(dotsInterval)
     }
   }, 100)
 })
@@ -247,7 +279,6 @@ function GetRandomLoadingMessage() {
     'Loading plugins...',
     'Preparing workspace...'
   ]
-
   return messages[Math.floor(Math.random() * messages.length)]
 }
 </script>
