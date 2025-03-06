@@ -8,7 +8,7 @@
     <div class="w-full md:w-3/4 p-10 h-full flex items-center justify-center">
       <div
         ref="map"
-        class="border-2 h-full w-full border-green-500 transition-all duration-500"
+        class="border-2 h-full w-full border-green-500 transition-all duration-500 overflow-hidden"
         :class="[isDisplayClosed ? 'max-h-0' : 'max-h-full']"
       >
         <MapComponent />
