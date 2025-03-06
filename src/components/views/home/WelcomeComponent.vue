@@ -3,6 +3,8 @@
   </SectionComponent>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import SectionComponent from '@/components/utils/SectionComponent.vue'
+</script>
 
 <style scoped></style>
