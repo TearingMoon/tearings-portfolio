@@ -1,10 +1,11 @@
 <template>
-  <SectionComponent class="relative w-full h-screen flex flex-col justify-center items-center">
-  </SectionComponent>
+  <div></div>
 </template>
 
 <script setup lang="ts">
-import SectionComponent from '@/components/utils/SectionComponent.vue'
+import { onMounted } from 'vue'
+
+onMounted(() => {})
 </script>
 
 <style scoped></style>
