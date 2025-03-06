@@ -16,30 +16,30 @@
     </div>
     <!-- Buttons -->
     <div
-      class="items-center md:gap-4 w-full md:w-1/4 md:h-full md:pl-0 px-10 pb-10 md:py-10 justify-center md:justify-normal grid grid-cols-2 md:grid-cols-1 gap-4"
+      class="items-center md:gap-y-10 w-full md:w-1/4 md:h-full md:pl-0 px-10 pb-10 md:py-10 justify-center md:justify-normal grid grid-cols-2 md:grid-cols-1 gap-4"
     >
       <button
-        class="text-green-500 md:text-4xl border-2 p-2 border-green-500 hover:bg-green-500 hover:text-neutral-900 font-bold hover:cursor-pointer w-full h-full"
+        class="text-green-500 md:text-4xl border-2 p-2 border-green-500 hover:bg-green-500 hover:text-neutral-900 font-bold hover:cursor-pointer w-full h-full animate__animated animate__fadeIn animate__delay-2s"
       >
         Uplink
       </button>
       <button
-        class="text-green-500 md:text-4xl border-2 p-2 border-green-500 hover:bg-green-500 hover:text-neutral-900 font-bold hover:cursor-pointer w-full h-full"
+        class="text-green-500 md:text-4xl border-2 p-2 border-green-500 hover:bg-green-500 hover:text-neutral-900 font-bold hover:cursor-pointer w-full h-full animate__animated animate__fadeIn animate__delay-1s"
       >
         Operations
       </button>
       <button
-        class="text-green-500 md:text-4xl border-2 p-2 border-green-500 hover:bg-green-500 hover:text-neutral-900 font-bold hover:cursor-pointer w-full h-full"
+        class="text-green-500 md:text-4xl border-2 p-2 border-green-500 hover:bg-green-500 hover:text-neutral-900 font-bold hover:cursor-pointer w-full h-full animate__animated animate__fadeIn"
       >
         Systems
       </button>
       <button
-        class="text-green-500 md:text-4xl border-2 p-2 border-green-500 hover:bg-green-500 hover:text-neutral-900 font-bold hover:cursor-pointer w-full h-full"
+        class="text-green-500 md:text-4xl border-2 p-2 border-green-500 hover:bg-green-500 hover:text-neutral-900 font-bold hover:cursor-pointer w-full h-full animate__animated animate__fadeIn animate__delay-1s"
       >
         Intel
       </button>
       <button
-        class="text-green-500 md:text-4xl border-2 p-2 border-green-500 hover:bg-green-500 hover:text-neutral-900 font-bold hover:cursor-pointer w-full h-full"
+        class="text-green-500 md:text-4xl border-2 p-2 border-green-500 hover:bg-green-500 hover:text-neutral-900 font-bold hover:cursor-pointer w-full h-full animate__animated animate__fadeIn animate__delay-2s"
       >
         Alerts
       </button>
