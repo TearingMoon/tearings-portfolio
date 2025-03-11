@@ -10,7 +10,7 @@ console.log(
   <div
     class="h-screen! w-screen! overflow-hidden! flex flex-col items-center justify-center crt-screen crt-glass flicker"
   >
-    <div class="scanlines h-screen w-screen"></div>
+    <div class="scanlines h-screen! w-screen!"></div>
     <RouterView />
   </div>
 </template>
@@ -41,10 +41,11 @@ console.log(
     transparent 4px
   );
   pointer-events: none;
+  z-index: 1000;
 }
 
 .flicker {
-  /*animation: flicker 0.15s infinite alternate; /* Uncomment this line to enable flicker effect */
+  animation: flicker 0.15s infinite alternate; /* Uncomment this line to enable flicker effect */
 }
 
 .crt-screen {
