@@ -7,7 +7,8 @@
       mode="out-in"
     >
       <LoadingScreen @finished-loading="hasFinishedLoading = true" v-if="!hasFinishedLoading" />
-      <SplashScreen @finished-splash="hasFinishedSpash = true" v-else-if="!hasFinishedSpash" />
+      <!--  -->
+      <SplashScreen v-else-if="!hasFinishedSpash" @finished-splash="hasFinishedSpash = true" />
       <MainMenuScreen v-else />
     </Transition>
   </main>
