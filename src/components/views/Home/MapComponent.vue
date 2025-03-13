@@ -12,6 +12,14 @@ let isResizing = false
 let AutoRotate = true
 let rotation: [number, number] = [0, 0] // Rotación inicial
 
+const dataPoints: [string, number, number][] = [
+  ['Uplink', 20, 20],
+  ['Operations', 45, 60],
+  ['Systems', 30, 120],
+  ['Intel', 135, 150],
+  ['Alerts', 70, 210]
+]
+
 const observer = new ResizeObserver(() => {
   if (!isResizing) {
     isResizing = true
@@ -88,6 +96,49 @@ function draw() {
     .attr('stroke', 'oklch(0.723 0.219 149.579)')
     .attr('stroke-width', 0.5)
     .attr('opacity', 0.7)
+
+  // Dibujar los puntos de interés
+  svg
+    .selectAll('.point')
+    .data(dataPoints)
+    .enter()
+    .append('circle')
+    .attr('class', 'point')
+    .attr('cx', (d) => {
+      const projected = ortoProjection([d[2], d[1]])
+      return projected ? projected[0] : -100 // Evita NaN
+    })
+    .attr('cy', (d) => {
+      const projected = ortoProjection([d[2], d[1]])
+      return projected ? projected[1] : -100
+    })
+    .attr('r', 5)
+    .attr('fill', 'oklch(0.723 0.219 149.579)')
+    .attr('stroke', 'oklch(0.723 0.219 149.579)')
+    .attr('stroke-width', 1)
+    .style('display', (d) => {
+      const projected = ortoProjection([d[2], d[1]])
+      return projected && projected[1] >= 0 ? 'block' : 'none' // Oculta los puntos traseros
+    })
+
+  svg
+    .selectAll('.point-label')
+    .data(dataPoints)
+    .enter()
+    .append('text')
+    .attr('class', 'point-label')
+    .attr('x', (d) => {
+      const projected = ortoProjection([d[2], d[1]])
+      return projected ? projected[0] : -100
+    })
+    .attr('y', (d) => {
+      const projected = ortoProjection([d[2], d[1]])
+      return projected ? projected[1] : -100
+    })
+    .attr('dy', -10) // Desplazamos el texto un poco arriba del punto
+    .attr('text-anchor', 'middle') // Centra el texto
+    .attr('fill', 'white') // Color del texto
+    .text((d) => d[0]) // Aquí es donde muestras el nombre del punto
 }
 
 // Función para configurar el drag correctamente
