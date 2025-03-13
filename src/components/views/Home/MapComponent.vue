@@ -1,5 +1,11 @@
 <template>
-  <svg class="w-full h-full text-green-500" ref="MainSvg"></svg>
+  <div class="w-full h-full relative">
+    <svg class="w-full h-full text-green-500" ref="MainSvg"></svg>
+    <p class="absolute bottom-0 left-0 p-2 text-green-500 flex flex-col">
+      <span>Rotation speed: {{ currentRotationSpeed.toFixed(2) }}</span>
+      <span>Autorotate: {{ AutoRotate }}</span>
+    </p>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -9,8 +15,11 @@ import * as d3 from 'd3'
 const MainSvg = ref<SVGSVGElement | null>(null)
 let animationFrameId: number | null = null
 let isResizing = false
-let AutoRotate = true
+let AutoRotate = ref(true)
 let rotation: [number, number] = [0, 0] // Rotación inicial
+
+const currentRotationSpeed = ref(0.05)
+const maxRotationSpeed = 0.5
 
 const dataPoints: [string, number, number][] = [
   ['Uplink', 20, 20],
@@ -46,9 +55,15 @@ onBeforeUnmount(() => {
 // Función para rotación automática
 function autoRotate() {
   function rotate() {
-    if (AutoRotate) {
-      rotation[0] += 0.1 // Ajuste de velocidad de rotación
+    if (AutoRotate.value) {
+      if (currentRotationSpeed.value < maxRotationSpeed) {
+        currentRotationSpeed.value += 0.01
+      }
+
+      rotation[0] += currentRotationSpeed.value
       draw()
+    } else {
+      currentRotationSpeed.value = 0
     }
     animationFrameId = requestAnimationFrame(rotate)
   }
@@ -83,7 +98,7 @@ function draw() {
     .attr('cx', width / 2)
     .attr('cy', height / 2)
     .attr('r', radius)
-    .attr('fill', 'none')
+    .attr('fill', 'black')
     .attr('stroke', 'oklch(0.723 0.219 149.579)')
     .attr('stroke-width', 1)
 
@@ -149,13 +164,13 @@ function setupDrag() {
   if (!MainSvg.value) return
 
   const drag = d3.drag<SVGSVGElement, unknown>().on('drag', (event) => {
-    AutoRotate = false // Detener la rotación automática al hacer drag
+    AutoRotate.value = false // Detener la rotación automática al hacer drag
     rotation[0] += event.dx * 0.5 // Ajuste en X
     rotation[1] -= event.dy * 0.5 // Ajuste en Y
     draw() // Redibujar con la nueva rotación
 
     // Reactivar auto-rotación después de 5 segundos
-    setTimeout(() => (AutoRotate = true), 2500)
+    setTimeout(() => (AutoRotate.value = true), 5000)
   })
 
   d3.select(MainSvg.value).call(drag)
