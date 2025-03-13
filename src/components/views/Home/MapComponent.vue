@@ -137,7 +137,10 @@ function draw() {
     })
     .attr('dy', -10) // Desplazamos el texto un poco arriba del punto
     .attr('text-anchor', 'middle') // Centra el texto
-    .attr('fill', 'white') // Color del texto
+    .attr('fill', 'oklch(0.723 0.219 149.579)') // Color del texto
+    .attr('font-size', 30) // Tamaño de la fuente
+    .attr('font-weight', 'bold') // Fuente en negrita
+
     .text((d) => d[0]) // Aquí es donde muestras el nombre del punto
 }
 
