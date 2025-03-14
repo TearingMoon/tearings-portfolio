@@ -1,45 +1,71 @@
 <template>
   <div class="w-full h-full relative">
     <svg class="w-full h-full text-green-500" ref="MainSvg"></svg>
-    <p class="absolute bottom-0 left-0 p-2 text-green-500 flex flex-col">
-      <span>Rotation speed: {{ currentRotationSpeed.toFixed(2) }}</span>
-      <span>Autorotate: {{ AutoRotate }}</span>
-    </p>
+    <div class="flex items-center justify-center w-full h-full"></div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as d3 from 'd3'
-import { interpolateNumber } from 'd3-interpolate'
 import * as topojson from 'topojson-client'
 import type { Topology } from 'topojson-specification'
 
 const MainSvg = ref<SVGSVGElement | null>(null)
 let animationFrameId: number | null = null
-let AutoRotate = ref(true)
 
 let rotation: [number, number] = [0, -10] // Rotación inicial
 
-const currentRotationSpeed = ref(0.005)
-const maxRotationSpeed = 0.2
 const offset = 10
 
 let land: any = null
 let svg: any = null
 let svgSize = { width: 0, height: 0 }
+let ortoProjection: d3.GeoProjection | null = null
+let path: d3.GeoPath | null = null
 let radius = 0
+let radiusModifier = 1
 const graticule = d3.geoGraticule()
 const observer = new ResizeObserver(handleResize)
-let timeout: ReturnType<typeof setTimeout> | null = null
 
-const dataPoints: { name: string; longitude: number; latitude: number }[] = [
-  { name: 'Uplink', longitude: -3.7038, latitude: 40.4168 }, //Madrid
-  { name: 'Operations', longitude: -77.0369, latitude: 38.9072 }, //Washington
-  { name: 'Systems', longitude: 114.0579, latitude: 22.5431 }, //Shenzhen
-  { name: 'Intel', longitude: 139.6917, latitude: 35.6895 }, //Tokyo
-  { name: 'Alerts', longitude: 37.6173, latitude: 55.7558 } //Moscow
+const dataPoints: { name: string; longitude: number; latitude: number; url: string }[] = [
+  {
+    name: 'Uplink',
+    longitude: -3.7038,
+    latitude: 40.4168,
+    url: '/uplink'
+  }, //Madrid
+  {
+    name: 'Operations',
+    longitude: -77.0369,
+    latitude: 38.9072,
+    url: '/operations'
+  }, //Washington
+  {
+    name: 'Systems',
+    longitude: 114.0579,
+    latitude: 22.5431,
+    url: '/systems'
+  }, //Shenzhen
+  {
+    name: 'Intel',
+    longitude: 139.6917,
+    latitude: 35.6895,
+    url: '/intel'
+  }, //Tokyo
+  {
+    name: 'Alerts',
+    longitude: 37.6173,
+    latitude: 55.7558,
+    url: '/alerts'
+  } //Moscow
 ]
+
+defineExpose({
+  goToPoint(name: string) {
+    goToPoint(name)
+  }
+})
 
 onMounted(() => {
   if (!MainSvg.value) return
@@ -47,7 +73,6 @@ onMounted(() => {
   svg = d3.select(MainSvg.value)
   handleResize()
   setupDrag()
-  autoRotate()
   loadWorldMap()
   draw()
 })
@@ -57,45 +82,25 @@ onBeforeUnmount(() => {
   if (animationFrameId) cancelAnimationFrame(animationFrameId)
 })
 
-function autoRotate() {
-  function rotate() {
-    if (AutoRotate.value) {
-      currentRotationSpeed.value = interpolateNumber(
-        currentRotationSpeed.value,
-        maxRotationSpeed
-      )(0.01)
-      rotation[1] = interpolateNumber(rotation[1], -10)(0.01)
-
-      rotation[0] += currentRotationSpeed.value % 360
-    } else {
-      currentRotationSpeed.value = interpolateNumber(currentRotationSpeed.value, 0)(0.1)
-    }
-
-    draw()
-    animationFrameId = requestAnimationFrame(rotate)
-  }
-
-  rotate()
-}
-
 function handleResize() {
   svgSize.width = MainSvg.value?.clientWidth || 500
   svgSize.height = MainSvg.value?.clientHeight || 500
   radius = Math.max(Math.min(svgSize.width, svgSize.height) / 2 - offset, offset)
+  requestAnimationFrame(draw)
 }
 
 let isDrawing = false
-async function draw() {
+function draw() {
   if (!MainSvg.value || isDrawing) return
   isDrawing = true
-  const ortoProjection = d3
+  ortoProjection = d3
     .geoOrthographic()
-    .scale(radius)
+    .scale(radius * radiusModifier)
     .translate([svgSize.width / 2, svgSize.height / 2])
     .clipAngle(90)
     .rotate(rotation)
 
-  const path = d3.geoPath().projection(ortoProjection).pointRadius(2)
+  path = d3.geoPath().projection(ortoProjection).pointRadius(2)
 
   clearSvg()
   svg
@@ -111,18 +116,24 @@ async function draw() {
 
 function setupDrag() {
   if (!MainSvg.value) return
-  const drag = d3
-    .drag<SVGSVGElement, unknown>()
-    .on('drag', (event) => {
-      AutoRotate.value = false
-      rotation[0] += (event.dx * 0.5) % 360
-      rotation[1] -= (event.dy * 0.5) % 360
-      draw()
-    })
-    .on('end', () => {
-      if (timeout != null) clearTimeout(timeout)
-      timeout = setTimeout(() => (AutoRotate.value = true), 5000)
-    })
+
+  const drag = d3.drag<SVGSVGElement, unknown>().on('drag', (event) => {
+    if (radiusModifier !== 1) {
+      d3.transition()
+        .duration(2000)
+        .tween('radius', () => {
+          const r = d3.interpolate(radiusModifier, 1)
+          return (t) => {
+            radiusModifier = r(t)
+            draw()
+          }
+        })
+    }
+    rotation[0] = (rotation[0] + event.dx * 0.5) % 360
+    rotation[1] = (rotation[1] - event.dy * 0.5) % 360
+
+    draw()
+  })
 
   d3.select(MainSvg.value).call(drag)
 }
@@ -135,6 +146,7 @@ function loadWorldMap() {
       .then((world) => {
         if (!world) throw new Error('No se pudo cargar el mapa mundial')
         land = topojson.feature(world as Topology, (world as Topology).objects.land)
+        draw()
       })
       .catch(console.error)
   }
@@ -145,13 +157,14 @@ function clearSvg() {
 }
 
 function drawWorldMap(path: d3.GeoPath) {
-  if (land != null)
+  if (land != null) {
     svg
       .append('path')
       .datum(land)
       .attr('d', path)
-      .attr('fill', 'black)')
+      .style('fill', 'rgba(0, 255, 0, 0.05)')
       .attr('stroke', 'oklch(0.723 0.219 149.579)')
+  }
 }
 
 function drawGraticule(path: d3.GeoPath) {
@@ -159,8 +172,8 @@ function drawGraticule(path: d3.GeoPath) {
     .append('circle')
     .attr('cx', svgSize.width / 2)
     .attr('cy', svgSize.height / 2)
-    .attr('r', radius)
-    .attr('fill', 'black')
+    .attr('r', radius * radiusModifier)
+    .attr('fill', 'none')
     .attr('stroke', 'oklch(0.723 0.219 149.579)')
     .attr('stroke-width', 1)
 
@@ -194,7 +207,7 @@ function drawPoints(path: d3.GeoPath, ortoProjection: d3.GeoProjection) {
     .attr('stroke', 'oklch(0.723 0.219 149.579)')
     .attr('stroke-width', 1)
     .attr('visibility', (d: any) => getVisibility(d, ortoProjection))
-
+    .on('click', (event: any, d: any) => goToPoint(d.name))
   svg
     .selectAll('.point-label')
     .data(dataPoints)
@@ -214,6 +227,7 @@ function drawPoints(path: d3.GeoPath, ortoProjection: d3.GeoProjection) {
     .attr('font-weight', 'bold')
     .text((d: any) => d.name)
     .attr('visibility', (d: any) => getVisibility(d, ortoProjection))
+    .on('click', (event: any, d: any) => goToPoint(d.name))
 }
 
 function getVisibility(d: any, projection: d3.GeoProjection) {
@@ -240,11 +254,44 @@ function getVisibility(d: any, projection: d3.GeoProjection) {
   return visible ? 'visible' : 'hidden'
 }
 
-function goToPoint(index: number) {
-  if (index < 0 || index >= dataPoints.length) return
-  const point = dataPoints[index]
-  rotation = [point.longitude, point.latitude]
-  draw()
+async function goToPoint(name: string) {
+  const point = dataPoints.find((p) => p.name === name)
+  if (!point) return
+  const invertedRotation: [number, number] = [360 - rotation[0], 360 - rotation[1]]
+
+  // Si `radiusModifier` no es 1, primero hacemos una transición para normalizarlo
+  if (radiusModifier !== 1) {
+    d3.transition()
+      .duration(2000)
+      .tween('radius', () => {
+        const r = d3.interpolate(radiusModifier, 1)
+        return (t) => {
+          radiusModifier = r(t)
+          draw()
+        }
+      })
+      .on('end', () => transitionToPoint(point, invertedRotation))
+  } else {
+    transitionToPoint(point, invertedRotation)
+  }
+}
+
+function transitionToPoint(
+  point: { name: string; longitude: number; latitude: number; url: string },
+  invertedRotation: [number, number]
+) {
+  d3.transition()
+    .duration(2000)
+    .tween('rotate', () => {
+      const r1 = d3.interpolate(rotation, [-point.longitude, -point.latitude])
+      const r2 = d3.interpolate(invertedRotation, [-point.longitude, -point.latitude])
+
+      return (t) => {
+        rotation = [Math.min(r1(t)[0], r2(t)[0]), Math.min(r1(t)[1], r2(t)[1])]
+        radiusModifier = 1 + t * 0.5
+        draw()
+      }
+    })
 }
 </script>
 
