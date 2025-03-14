@@ -120,8 +120,8 @@ function draw() {
 
   drawGraticule(path)
   drawWorldMap(path)
-  drawPoints(path, ortoProjection)
   drawUnits(path, ortoProjection)
+  drawPoints(path, ortoProjection)
 
   isDrawing = false
 }
