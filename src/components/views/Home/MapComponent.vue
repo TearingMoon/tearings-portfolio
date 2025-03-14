@@ -10,6 +10,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as d3 from 'd3'
 import * as topojson from 'topojson-client'
 import type { Topology } from 'topojson-specification'
+import ms from 'milsymbol'
 
 const MainSvg = ref<SVGSVGElement | null>(null)
 let animationFrameId: number | null = null
@@ -61,6 +62,15 @@ const dataPoints: { name: string; longitude: number; latitude: number; url: stri
   } //Moscow
 ]
 
+let units: {
+  name: string
+  longitude: number
+  latitude: number
+  UnitBranch: UnitBranch
+  type: UnitType
+  sidc?: string
+}[] = []
+
 defineExpose({
   goToPoint(name: string) {
     goToPoint(name)
@@ -71,6 +81,7 @@ onMounted(() => {
   if (!MainSvg.value) return
   observer.observe(MainSvg.value)
   svg = d3.select(MainSvg.value)
+  generateGroundUnits()
   handleResize()
   setupDrag()
   loadWorldMap()
@@ -110,6 +121,7 @@ function draw() {
   drawGraticule(path)
   drawWorldMap(path)
   drawPoints(path, ortoProjection)
+  drawUnits(path, ortoProjection)
 
   isDrawing = false
 }
@@ -230,6 +242,30 @@ function drawPoints(path: d3.GeoPath, ortoProjection: d3.GeoProjection) {
     .on('click', (event: any, d: any) => goToPoint(d.name))
 }
 
+function drawUnits(path: d3.GeoPath, ortoProjection: d3.GeoProjection) {
+  svg
+    .selectAll('.unit')
+    .data(units)
+    .enter()
+    .append('g')
+    .attr('class', 'unit')
+    .attr('transform', (d: any) => {
+      const projected = ortoProjection([d.longitude, d.latitude])
+      return projected ? `translate(${projected[0]}, ${projected[1]})` : 'translate(-100, -100)'
+    })
+    .attr('visibility', (d: any) => getVisibility(d, ortoProjection))
+    .each(function (this: SVGGElement, d: any) {
+      const symbol = new ms.Symbol(d.sidc, {
+        size: 15 * Math.pow(radiusModifier, 2),
+        fillColor: 'oklch(0.723 0.219 149.579)'
+      })
+      this.appendChild(symbol.asDOM())
+    })
+    .on('click', (event: any, d: any) => {
+      transitionToPoint(d, rotation)
+    })
+}
+
 function getVisibility(d: any, projection: d3.GeoProjection) {
   let visible = false
   const stream = projection.stream({
@@ -292,6 +328,113 @@ function transitionToPoint(
         draw()
       }
     })
+}
+
+function generateGroundUnits() {
+  for (let i = 0; i < 10; i++) {
+    units.push({
+      name: `eagle ${i}`,
+      longitude: Math.random() * 360 - 180,
+      latitude: Math.random() * 180 - 90,
+      UnitBranch: UnitBranch.Air,
+      type: UnitType.Fighter,
+      sidc: '130301000011010400000000000000'
+    })
+  }
+
+  for (let i = 0; i < 10; i++) {
+    units.push({
+      name: `tank ${i}`,
+      longitude: Math.random() * 360 - 180,
+      latitude: Math.random() * 180 - 90,
+      UnitBranch: UnitBranch.Ground,
+      type: UnitType.Tank,
+      sidc: '130310000012040100000000000000'
+    })
+  }
+
+  for (let i = 0; i < 10; i++) {
+    units.push({
+      name: `infantry ${i}`,
+      longitude: Math.random() * 360 - 180,
+      latitude: Math.random() * 180 - 90,
+      UnitBranch: UnitBranch.Ground,
+      type: UnitType.Infantry,
+      sidc: '130310000012110000000000000000'
+    })
+  }
+
+  for (let i = 0; i < 10; i++) {
+    units.push({
+      name: `artillery ${i}`,
+      longitude: Math.random() * 360 - 180,
+      latitude: Math.random() * 180 - 90,
+      UnitBranch: UnitBranch.Ground,
+      type: UnitType.Artillery,
+      sidc: '130310000013030100000000000000'
+    })
+  }
+
+  for (let i = 0; i < 10; i++) {
+    units.push({
+      name: `bomber ${i}`,
+      longitude: Math.random() * 360 - 180,
+      latitude: Math.random() * 180 - 90,
+      UnitBranch: UnitBranch.Air,
+      type: UnitType.Bomber,
+      sidc: '130301000011010300000000000000'
+    })
+  }
+
+  for (let i = 0; i < 10; i++) {
+    units.push({
+      name: `transport ${i}`,
+      longitude: Math.random() * 360 - 180,
+      latitude: Math.random() * 180 - 90,
+      UnitBranch: UnitBranch.Air,
+      type: UnitType.Transport,
+      sidc: '130310000012110400000000000000'
+    })
+  }
+
+  for (let i = 0; i < 10; i++) {
+    units.push({
+      name: `ship ${i}`,
+      longitude: Math.random() * 360 - 180,
+      latitude: Math.random() * 180 - 90,
+      UnitBranch: UnitBranch.Naval,
+      type: UnitType.Ship,
+      sidc: '130330000012020300000000000000'
+    })
+  }
+
+  for (let i = 0; i < 10; i++) {
+    units.push({
+      name: `submarine ${i}`,
+      longitude: Math.random() * 360 - 180,
+      latitude: Math.random() * 180 - 90,
+      UnitBranch: UnitBranch.Naval,
+      type: UnitType.Submarine,
+      sidc: '130335000011010000000000000000'
+    })
+  }
+}
+
+enum UnitBranch {
+  Ground,
+  Air,
+  Naval
+}
+
+enum UnitType {
+  Transport,
+  Tank,
+  Infantry,
+  Artillery,
+  Fighter,
+  Bomber,
+  Ship,
+  Submarine
 }
 </script>
 

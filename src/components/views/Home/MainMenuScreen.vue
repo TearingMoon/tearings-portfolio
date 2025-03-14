@@ -28,6 +28,7 @@
         Systems
         <span class="font-medium text-xs sm:text-lg">(Habilidades)</span>
       </button>
+      <!-- Hacer que sea un componente y que suba su opacidad de manera aleatoria -->
       <button
         class="text-green-500 lg:text-4xl border-2 p-2 border-green-500 hover:bg-green-500 hover:text-black font-bold hover:cursor-pointer w-full h-full animate__animated animate__fadeIn animate__delay-1s flex flex-col items-center justify-center"
         @click="MapComponentRef?.goToPoint('Intel')"
