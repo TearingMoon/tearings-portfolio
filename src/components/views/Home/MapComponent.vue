@@ -10,10 +10,8 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import * as d3 from 'd3'
 import * as topojson from 'topojson-client'
 import type { Topology } from 'topojson-specification'
-import ms from 'milsymbol'
 
 const MainSvg = ref<SVGSVGElement | null>(null)
-let animationFrameId: number | null = null
 
 let rotation: [number, number] = [0, -10] // Rotación inicial
 
@@ -27,6 +25,7 @@ let path: d3.GeoPath | null = null
 let radius = 0
 let radiusModifier = 1
 const graticule = d3.geoGraticule()
+
 const observer = new ResizeObserver(handleResize)
 
 const dataPoints: { name: string; longitude: number; latitude: number; url: string }[] = [
@@ -62,15 +61,6 @@ const dataPoints: { name: string; longitude: number; latitude: number; url: stri
   } //Moscow
 ]
 
-let units: {
-  name: string
-  longitude: number
-  latitude: number
-  UnitBranch: UnitBranch
-  type: UnitType
-  sidc?: string
-}[] = []
-
 defineExpose({
   goToPoint(name: string) {
     goToPoint(name)
@@ -81,7 +71,6 @@ onMounted(() => {
   if (!MainSvg.value) return
   observer.observe(MainSvg.value)
   svg = d3.select(MainSvg.value)
-  generateGroundUnits()
   handleResize()
   setupDrag()
   loadWorldMap()
@@ -90,7 +79,6 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   observer.disconnect()
-  if (animationFrameId) cancelAnimationFrame(animationFrameId)
 })
 
 function handleResize() {
@@ -120,32 +108,36 @@ function draw() {
 
   drawGraticule(path)
   drawWorldMap(path)
-  drawUnits(path, ortoProjection)
   drawPoints(path, ortoProjection)
 
   isDrawing = false
 }
 
+let canDrag = true
 function setupDrag() {
   if (!MainSvg.value) return
 
-  const drag = d3.drag<SVGSVGElement, unknown>().on('drag', (event) => {
-    if (radiusModifier !== 1) {
-      d3.transition()
-        .duration(2000)
-        .tween('radius', () => {
-          const r = d3.interpolate(radiusModifier, 1)
-          return (t) => {
-            radiusModifier = r(t)
-            draw()
-          }
-        })
-    }
-    rotation[0] = (rotation[0] + event.dx * 0.5) % 360
-    rotation[1] = (rotation[1] - event.dy * 0.5) % 360
-
-    draw()
-  })
+  const drag = d3
+    .drag<SVGSVGElement, unknown>()
+    .on('drag', (event) => {
+      if (!canDrag) return
+      rotation[0] = (rotation[0] + event.dx * 0.5) % 360
+      rotation[1] = (rotation[1] - event.dy * 0.5) % 360
+      draw()
+    })
+    .on('end', () => {
+      if (radiusModifier !== 1) {
+        d3.transition()
+          .duration(2000)
+          .tween('radius', () => {
+            const r = d3.interpolate(radiusModifier, 1)
+            return (t) => {
+              radiusModifier = r(t)
+              draw()
+            }
+          })
+      }
+    })
 
   d3.select(MainSvg.value).call(drag)
 }
@@ -219,6 +211,7 @@ function drawPoints(path: d3.GeoPath, ortoProjection: d3.GeoProjection) {
     .attr('stroke', 'oklch(0.723 0.219 149.579)')
     .attr('stroke-width', 1)
     .attr('visibility', (d: any) => getVisibility(d, ortoProjection))
+    .style('cursor', 'pointer')
     .on('click', (event: any, d: any) => goToPoint(d.name))
   svg
     .selectAll('.point-label')
@@ -237,33 +230,10 @@ function drawPoints(path: d3.GeoPath, ortoProjection: d3.GeoProjection) {
     .attr('fill', 'oklch(0.723 0.219 149.579)')
     .attr('font-size', 30)
     .attr('font-weight', 'bold')
+    .style('cursor', 'pointer')
     .text((d: any) => d.name)
     .attr('visibility', (d: any) => getVisibility(d, ortoProjection))
     .on('click', (event: any, d: any) => goToPoint(d.name))
-}
-
-function drawUnits(path: d3.GeoPath, ortoProjection: d3.GeoProjection) {
-  svg
-    .selectAll('.unit')
-    .data(units)
-    .enter()
-    .append('g')
-    .attr('class', 'unit')
-    .attr('transform', (d: any) => {
-      const projected = ortoProjection([d.longitude, d.latitude])
-      return projected ? `translate(${projected[0]}, ${projected[1]})` : 'translate(-100, -100)'
-    })
-    .attr('visibility', (d: any) => getVisibility(d, ortoProjection))
-    .each(function (this: SVGGElement, d: any) {
-      const symbol = new ms.Symbol(d.sidc, {
-        size: 15 * Math.pow(radiusModifier, 2),
-        fillColor: 'oklch(0.723 0.219 149.579)'
-      })
-      this.appendChild(symbol.asDOM())
-    })
-    .on('click', (event: any, d: any) => {
-      transitionToPoint(d, rotation)
-    })
 }
 
 function getVisibility(d: any, projection: d3.GeoProjection) {
@@ -294,8 +264,16 @@ async function goToPoint(name: string) {
   const point = dataPoints.find((p) => p.name === name)
   if (!point) return
   const invertedRotation: [number, number] = [360 - rotation[0], 360 - rotation[1]]
+  transitionToPoint(point, invertedRotation)
+}
 
-  // Si `radiusModifier` no es 1, primero hacemos una transición para normalizarlo
+function transitionToPoint(
+  point: {
+    latitude: number
+    longitude: number
+  },
+  invertedRotation: [number, number]
+) {
   if (radiusModifier !== 1) {
     d3.transition()
       .duration(2000)
@@ -306,135 +284,35 @@ async function goToPoint(name: string) {
           draw()
         }
       })
-      .on('end', () => transitionToPoint(point, invertedRotation))
+      .on('end', () =>
+        d3
+          .transition()
+          .duration(2000)
+          .tween('rotate', () => {
+            const r1 = d3.interpolate(rotation, [-point.longitude, -point.latitude])
+            const r2 = d3.interpolate(invertedRotation, [-point.longitude, -point.latitude])
+
+            return (t) => {
+              rotation = [Math.min(r1(t)[0], r2(t)[0]), Math.min(r1(t)[1], r2(t)[1])]
+              radiusModifier = 1 + t * 0.5
+              draw()
+            }
+          })
+      )
   } else {
-    transitionToPoint(point, invertedRotation)
+    d3.transition()
+      .duration(2000)
+      .tween('rotate', () => {
+        const r1 = d3.interpolate(rotation, [-point.longitude, -point.latitude])
+        const r2 = d3.interpolate(invertedRotation, [-point.longitude, -point.latitude])
+
+        return (t) => {
+          rotation = [Math.min(r1(t)[0], r2(t)[0]), Math.min(r1(t)[1], r2(t)[1])]
+          radiusModifier = 1 + t * 0.5
+          draw()
+        }
+      })
   }
-}
-
-function transitionToPoint(
-  point: { name: string; longitude: number; latitude: number; url: string },
-  invertedRotation: [number, number]
-) {
-  d3.transition()
-    .duration(2000)
-    .tween('rotate', () => {
-      const r1 = d3.interpolate(rotation, [-point.longitude, -point.latitude])
-      const r2 = d3.interpolate(invertedRotation, [-point.longitude, -point.latitude])
-
-      return (t) => {
-        rotation = [Math.min(r1(t)[0], r2(t)[0]), Math.min(r1(t)[1], r2(t)[1])]
-        radiusModifier = 1 + t * 0.5
-        draw()
-      }
-    })
-}
-
-function generateGroundUnits() {
-  for (let i = 0; i < 10; i++) {
-    units.push({
-      name: `eagle ${i}`,
-      longitude: Math.random() * 360 - 180,
-      latitude: Math.random() * 180 - 90,
-      UnitBranch: UnitBranch.Air,
-      type: UnitType.Fighter,
-      sidc: '130301000011010400000000000000'
-    })
-  }
-
-  for (let i = 0; i < 10; i++) {
-    units.push({
-      name: `tank ${i}`,
-      longitude: Math.random() * 360 - 180,
-      latitude: Math.random() * 180 - 90,
-      UnitBranch: UnitBranch.Ground,
-      type: UnitType.Tank,
-      sidc: '130310000012040100000000000000'
-    })
-  }
-
-  for (let i = 0; i < 10; i++) {
-    units.push({
-      name: `infantry ${i}`,
-      longitude: Math.random() * 360 - 180,
-      latitude: Math.random() * 180 - 90,
-      UnitBranch: UnitBranch.Ground,
-      type: UnitType.Infantry,
-      sidc: '130310000012110000000000000000'
-    })
-  }
-
-  for (let i = 0; i < 10; i++) {
-    units.push({
-      name: `artillery ${i}`,
-      longitude: Math.random() * 360 - 180,
-      latitude: Math.random() * 180 - 90,
-      UnitBranch: UnitBranch.Ground,
-      type: UnitType.Artillery,
-      sidc: '130310000013030100000000000000'
-    })
-  }
-
-  for (let i = 0; i < 10; i++) {
-    units.push({
-      name: `bomber ${i}`,
-      longitude: Math.random() * 360 - 180,
-      latitude: Math.random() * 180 - 90,
-      UnitBranch: UnitBranch.Air,
-      type: UnitType.Bomber,
-      sidc: '130301000011010300000000000000'
-    })
-  }
-
-  for (let i = 0; i < 10; i++) {
-    units.push({
-      name: `transport ${i}`,
-      longitude: Math.random() * 360 - 180,
-      latitude: Math.random() * 180 - 90,
-      UnitBranch: UnitBranch.Air,
-      type: UnitType.Transport,
-      sidc: '130310000012110400000000000000'
-    })
-  }
-
-  for (let i = 0; i < 10; i++) {
-    units.push({
-      name: `ship ${i}`,
-      longitude: Math.random() * 360 - 180,
-      latitude: Math.random() * 180 - 90,
-      UnitBranch: UnitBranch.Naval,
-      type: UnitType.Ship,
-      sidc: '130330000012020300000000000000'
-    })
-  }
-
-  for (let i = 0; i < 10; i++) {
-    units.push({
-      name: `submarine ${i}`,
-      longitude: Math.random() * 360 - 180,
-      latitude: Math.random() * 180 - 90,
-      UnitBranch: UnitBranch.Naval,
-      type: UnitType.Submarine,
-      sidc: '130335000011010000000000000000'
-    })
-  }
-}
-
-enum UnitBranch {
-  Ground,
-  Air,
-  Naval
-}
-
-enum UnitType {
-  Transport,
-  Tank,
-  Infantry,
-  Artillery,
-  Fighter,
-  Bomber,
-  Ship,
-  Submarine
 }
 </script>
 
