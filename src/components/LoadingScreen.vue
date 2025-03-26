@@ -1,6 +1,6 @@
 <template>
   <main
-    class="w-screen h-screen flex flex-col items-center justify-center font-bold text-green-500 text-4xl gap-4"
+    class="w-screen h-screen flex flex-col items-center justify-center font-bold text-4xl gap-4"
   >
     <div ref="lateralLoadingInfo" class="absolute top-0 left-0 flex flex-col text-xs gap-0">
       <span v-for="(text, index) in displayedText" :key="index" class="m-0 text-green-700">{{
@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import LoadingBarComponent from '@/components/utils/LoadingBarComponent.vue'
+import LoadingBarComponent from '@/components/common/LoadingBarComponent.vue'
 
 const dots = ref('')
 const displayedText = ref<string[]>([])
