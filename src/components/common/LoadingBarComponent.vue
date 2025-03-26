@@ -29,7 +29,6 @@ progress::-moz-progress-bar {
 progress::-webkit-progress-value {
   background: var(--color-green-500);
 }
-
 progress::-webkit-progress-bar {
   background: transparent;
 }

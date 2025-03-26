@@ -31,7 +31,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts"> //TODO: Modiffy this component to fully use the screen
 import { ref, onMounted, useTemplateRef } from 'vue'
 
 enum commandType {
