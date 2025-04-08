@@ -2,6 +2,7 @@
   <div class="w-full h-full relative">
     <svg class="w-full h-full text-green-500" ref="mainSvg"></svg>
     <div class="flex items-center justify-center w-full h-full"></div>
+    <!-- <div class="absolute bottom-0">fps: {{ mapRenderer?.calculated_fps }}</div> -->
   </div>
 </template>
 
@@ -11,7 +12,7 @@ import MapRenderer from '@/typescript/MapRenderer'
 
 const mainSvg = ref<SVGSVGElement | null>(null)
 
-const mapRenderer = ref<MapRenderer | null>(null)
+let mapRenderer: MapRenderer | null = null
 
 const dataPoints: { name: string; longitude: number; latitude: number; url: string }[] = [
   {
@@ -54,19 +55,20 @@ defineExpose({
 
 onMounted(() => {
   if (mainSvg.value != null) {
-    mapRenderer.value = new MapRenderer({
+    mapRenderer = new MapRenderer({
       svg: mainSvg.value,
-      displayablePoints: dataPoints
+      displayablePoints: dataPoints,
+      offset: 30
     })
   }
 })
 
 onBeforeUnmount(() => {
-  mapRenderer.value?.End()
+  mapRenderer?.End()
 })
 
 async function goToPoint(name: string) {
-  mapRenderer.value?.GoToDisplayablePoint(name)
+  mapRenderer?.GoToDisplayablePoint(name)
 }
 </script>
 

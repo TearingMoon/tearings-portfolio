@@ -2,6 +2,12 @@ import * as d3 from 'd3'
 import * as topojson from 'topojson-client'
 import type { Topology } from 'topojson-specification'
 
+enum MapState {
+  Idle = 'idle',
+  Transitioning = 'transitioning',
+  UserInteraction = 'user_interaction'
+}
+
 interface MapRedererParams {
   svg: SVGSVGElement
   offset?: number
@@ -9,7 +15,6 @@ interface MapRedererParams {
   displayablePoints?: DisplayablePoint[]
   worldMapLocation?: string
 }
-
 /**
  * A class representing a map renderer.
  * @class MapRenderer
@@ -41,7 +46,8 @@ export default class MapRenderer {
     | null = null
   requestAnimationFrameId: number | null = null
 
-  canInteract: boolean = true
+  private canInteract: boolean = true
+  private mapState: MapState = MapState.Idle
 
   constructor({
     svg,
@@ -78,7 +84,6 @@ export default class MapRenderer {
   }
 
   HandleResize() {
-    console.log('Resizing...')
     if (this.svg) {
       const rect = this.svg.getBoundingClientRect()
       this.svgSize[0] = rect.width
@@ -119,6 +124,8 @@ export default class MapRenderer {
     this.svgSelection.call(zoom)
   }
 
+  SetUpHoverControls() {}
+
   LoadWorldMap() {
     d3.json(this.worldMapLocation)
       .then((worldMap) => {
@@ -133,10 +140,16 @@ export default class MapRenderer {
     this.requestAnimationFrameId = requestAnimationFrame(this.Draw.bind(this))
   }
 
+  rendering_delta: number = 0.1
+  private lastFrameTime = performance.now()
+  calculated_fps: number = 0
   isDrawing: boolean = false
   Draw() {
     if (this.isDrawing) return
     this.isDrawing = true
+    this.rendering_delta = performance.now() - this.lastFrameTime
+    this.lastFrameTime = performance.now()
+    this.calculated_fps = Math.round(1000 / this.rendering_delta)
 
     const ortoProjection = d3
       .geoOrthographic()
