@@ -1,6 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import MenuView from '../views/MenuView.vue'
-import TestingView from '../views/TestingView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,12 +10,37 @@ const router = createRouter({
     {
       path: '/menu/:startAnimation?',
       name: 'menu',
-      component: MenuView
+      component: () => import('../views/MenuView.vue')
     },
     {
       path: '/testing',
       name: 'testing',
-      component: TestingView
+      component: () => import('../views/TestingView.vue')
+    },
+    {
+      path: '/Contact',
+      name: 'contact',
+      component: () => import('../views/ContactView.vue')
+    },
+    {
+      path: '/Projects',
+      name: 'projects',
+      component: () => import('../views/ProjectsView.vue')
+    },
+    {
+      path: '/Achivements',
+      name: 'achivements',
+      component: () => import('../views/AchivementsView.vue')
+    },
+    {
+      path: '/Skills',
+      name: 'skills',
+      component: () => import('../views/SkillsView.vue')
+    },
+    {
+      path: '/News',
+      name: 'news',
+      component: () => import('../views/NewsView.vue')
     }
   ]
 })

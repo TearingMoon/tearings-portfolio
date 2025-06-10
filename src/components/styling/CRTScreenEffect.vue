@@ -1,31 +1,42 @@
 <template>
-  <main class="w-full h-full crt-screen crt-glass flicker text-green-500">
-    <div class="fixed h-screen w-screen scanlines"></div>
-    <slot class=""></slot>
-  </main>
+  <div :class="['crt-overlay ', props.class]">
+    <slot></slot>
+  </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const props = defineProps<{ class?: string }>()
+</script>
 
-<style scoped>
+<style>
 @keyframes flicker {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.9;
-  }
+  0%,
   100% {
     opacity: 1;
   }
+  33% {
+    opacity: 0.95;
+  }
+  66% {
+    opacity: 0.92;
+  }
 }
 
-.scanlines {
+.crt-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 255, 0, 0.05);
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+  backdrop-filter: contrast(1.2) brightness(0.9) saturate(1.3);
+  animation: flicker 0.2s infinite alternate;
+  pointer-events: none;
+}
+
+.crt-overlay::before {
+  content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: repeating-linear-gradient(
     rgba(0, 0, 0, 0.1) 0px,
     rgba(0, 0, 0, 0.1) 2px,
@@ -33,19 +44,6 @@
     transparent 4px
   );
   pointer-events: none;
-  z-index: 1000;
-}
-
-.flicker {
-  animation: flicker 0.15s infinite alternate;
-}
-
-.crt-screen {
-  background: rgba(0, 255, 0, 0.05);
-  box-shadow: 0px 0px 20px rgba(0, 255, 0, 0.3);
-}
-
-.crt-glass {
-  backdrop-filter: contrast(1.2) brightness(0.9) saturate(1.3);
+  z-index: 10;
 }
 </style>

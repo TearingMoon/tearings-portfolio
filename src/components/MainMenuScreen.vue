@@ -10,10 +10,30 @@
     <div
       class="items-center lg:gap-y-10 w-full lg:w-1/4 lg:h-full lg:pr-0 px-5 lg:px-10 pt-10 lg:py-10 justify-center lg:justify-normal grid grid-cols-2 lg:grid-cols-1 gap-4"
     >
-      <ButtonComponent></ButtonComponent>
-      <ButtonComponent></ButtonComponent>
-      <ButtonComponent></ButtonComponent>
-      <ButtonComponent></ButtonComponent>
+      <ButtonComponent
+        class="flex flex-col items-center justify-center w-full h-full"
+        text="Uplink"
+        @click="MapComponentRef?.goToPoint('Uplink')"
+      >
+      </ButtonComponent>
+      <ButtonComponent
+        class="flex flex-col items-center justify-center w-full h-full"
+        text="Uplink"
+        @click="MapComponentRef?.goToPoint('Uplink')"
+      >
+      </ButtonComponent>
+      <ButtonComponent
+        class="flex flex-col items-center justify-center w-full h-full"
+        text="Uplink"
+        @click="MapComponentRef?.goToPoint('Uplink')"
+      >
+      </ButtonComponent>
+      <ButtonComponent
+        class="flex flex-col items-center justify-center w-full h-full"
+        text="Uplink"
+        @click="MapComponentRef?.goToPoint('Uplink')"
+      >
+      </ButtonComponent>
     </div>
     <!-- Map -->
     <div class="w-full lg:w-2/4 p-5 lg:p-10 h-full flex items-center justify-center">
@@ -30,32 +50,31 @@
       class="items-center lg:gap-y-10 w-full lg:w-1/4 lg:h-full lg:pl-0 px-5 lg:px-10 pb-10 lg:py-10 justify-center lg:justify-normal grid grid-cols-2 lg:grid-cols-1 gap-4"
     >
       <ButtonComponent
-        class="flex flex-col items-center justify-center"
+        class="flex flex-col items-center justify-center w-full h-full"
+        text="Uplink"
         @click="MapComponentRef?.goToPoint('Uplink')"
       >
-        Uplink
-        <span class="font-medium text-xs sm:text-lg">(Contacto)</span>
       </ButtonComponent>
       <ButtonComponent
-        class="flex flex-col items-center justify-center"
-        @click="MapComponentRef?.goToPoint('Operations')"
+        class="flex flex-col items-center justify-center w-full h-full"
+        text="Uplink"
+        label="(Contacto)"
+        @click="MapComponentRef?.goToPoint('Uplink')"
       >
-        Operations
-        <span class="font-medium text-xs sm:text-lg">(Proyectos)</span>
       </ButtonComponent>
       <ButtonComponent
-        class="flex flex-col items-center justify-center"
-        @click="MapComponentRef?.goToPoint('Systems')"
+        class="flex flex-col items-center justify-center w-full h-full"
+        text="Uplink"
+        label="(Contacto)"
+        @click="MapComponentRef?.goToPoint('Uplink')"
       >
-        Systems
-        <span class="font-medium text-xs sm:text-lg">(Habilidades)</span>
       </ButtonComponent>
       <ButtonComponent
-        class="flex flex-col items-center justify-center"
-        @click="MapComponentRef?.goToPoint('Alerts')"
+        class="flex flex-col items-center justify-center w-full h-full"
+        text="Uplink"
+        label="(Contacto)"
+        @click="MapComponentRef?.goToPoint('Uplink')"
       >
-        Alerts
-        <span class="font-medium text-xs sm:text-lg">(Novedades)</span>
       </ButtonComponent>
     </div>
   </main>

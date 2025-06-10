@@ -1,12 +1,27 @@
 <template>
   <button
     @click="emit('click')"
-    class="w-full h-full border-2 p-2 border-green-500 hover:bg-green-500 hover:text-black font-bold hover:cursor-pointer"
+    :class="[
+      'inline-flex items-center border-2 px-4 py-2 border-green-500  transition-colors duration-200 ',
+      'hover:bg-green-500 hover:text-black',
+      props.class
+    ]"
+    role="button"
+    :aria-label="props.label || props.text || 'button'"
   >
-    <slot></slot>
+    <span :class="textClass">{{ props.text }}</span>
+    <span v-if="props.label" :class="labelClass"> {{ props.label }}</span>
   </button>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 const emit = defineEmits(['click'])
+
+const props = defineProps<{
+  class?: string
+  text?: string
+  textClass?: string
+  label?: string
+  labelClass?: string
+}>()
 </script>

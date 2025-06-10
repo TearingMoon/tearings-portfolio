@@ -1,7 +1,6 @@
 <template>
   <main class="flex flex-col w-full h-full">
-    <div class="text-white h-screen">Hola</div>
-    <div class="text-white h-screen">Hola</div>
+    <div class="text-white">Hola</div>
   </main>
 </template>
 
