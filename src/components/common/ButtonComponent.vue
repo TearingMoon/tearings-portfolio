@@ -2,7 +2,7 @@
   <button
     @click="emit('click')"
     :class="[
-      'inline-flex items-center border-2 px-4 py-2 border-green-500  transition-colors duration-200 ',
+      'inline-flex items-center border-2 px-4 py-2 border-green-500  transition-colors duration-200 cursor-pointer',
       'hover:bg-green-500 hover:text-black',
       props.class
     ]"

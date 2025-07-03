@@ -12,25 +12,33 @@
     >
       <ButtonComponent
         class="flex flex-col items-center justify-center w-full h-full"
-        text="Uplink"
+        text-class="font-bold"
+        text="COMM-LINK 01"
+        label="(Contact)"
         @click="MapComponentRef?.goToPoint('Uplink')"
       >
       </ButtonComponent>
       <ButtonComponent
         class="flex flex-col items-center justify-center w-full h-full"
-        text="Uplink"
+        text-class="font-bold"
+        text="OPS-CATALOG 02"
+        label="(Projects)"
         @click="MapComponentRef?.goToPoint('Uplink')"
       >
       </ButtonComponent>
       <ButtonComponent
         class="flex flex-col items-center justify-center w-full h-full"
-        text="Uplink"
+        text-class="font-bold"
+        text="SERVICE RECORD 03"
+        label="(Achievements)"
         @click="MapComponentRef?.goToPoint('Uplink')"
       >
       </ButtonComponent>
       <ButtonComponent
         class="flex flex-col items-center justify-center w-full h-full"
-        text="Uplink"
+        text-class="font-bold"
+        text="OPERATOR PROFILE 04"
+        label="(Skills)"
         @click="MapComponentRef?.goToPoint('Uplink')"
       >
       </ButtonComponent>
@@ -51,14 +59,17 @@
     >
       <ButtonComponent
         class="flex flex-col items-center justify-center w-full h-full"
-        text="Uplink"
+        text-class="font-bold"
+        text="COMMAND UPLINK 05"
+        label="(News)"
         @click="MapComponentRef?.goToPoint('Uplink')"
       >
       </ButtonComponent>
       <ButtonComponent
         class="flex flex-col items-center justify-center w-full h-full"
-        text="Uplink"
-        label="(Contacto)"
+        text-class="font-bold"
+        text="BLACK-OPS LAB 07"
+        label="(Experiments)"
         @click="MapComponentRef?.goToPoint('Uplink')"
       >
       </ButtonComponent>

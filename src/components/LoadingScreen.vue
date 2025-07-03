@@ -2,10 +2,11 @@
   <main
     class="w-screen h-screen flex flex-col items-center justify-center font-bold text-4xl gap-4"
   >
-    <div ref="lateralLoadingInfo" class="absolute top-0 left-0 flex flex-col text-xs gap-0">
-      <span v-for="(text, index) in displayedText" :key="index" class="m-0 text-green-700">{{
-        text
-      }}</span>
+    <div
+      ref="lateralLoadingInfo"
+      class="absolute top-0 left-0 flex text-crt-sm flex-col gap-0 opacity-50"
+    >
+      <span v-for="(text, index) in displayedText" :key="index" class="m-0">{{ text }}</span>
     </div>
 
     <h1>Starting{{ dots }}</h1>
@@ -53,7 +54,7 @@ onMounted(() => {
         messageAmmount = 0
       }
     }
-  }, 100)
+  }, 50)
 
   //Add progress to the loading bar
   const loadingBarInterval = setInterval(() => {
