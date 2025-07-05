@@ -3,18 +3,19 @@ import * as topojson from 'topojson-client'
 import type { Topology } from 'topojson-specification'
 
 enum MapState {
-  Idle = 'idle',
-  Transitioning = 'transitioning',
-  UserInteraction = 'user_interaction'
+  IDDLE,
+  TRANSITION,
+  INTERACTION
 }
 
-interface MapRedererParams {
+interface MapRendererParams {
   svg: SVGSVGElement
   offset?: number
   rotation?: [number, number]
   displayablePoints?: DisplayablePoint[]
   worldMapLocation?: string
 }
+
 /**
  * A class representing a map renderer.
  * @class MapRenderer
@@ -47,7 +48,7 @@ export default class MapRenderer {
   requestAnimationFrameId: number | null = null
 
   private canInteract: boolean = true
-  private mapState: MapState = MapState.Idle
+  private mapState: MapState = MapState.IDDLE
 
   constructor({
     svg,
@@ -55,7 +56,7 @@ export default class MapRenderer {
     rotation = [0, -10],
     displayablePoints = [],
     worldMapLocation = '/json/land-110m.json'
-  }: MapRedererParams) {
+  }: MapRendererParams) {
     this.svg = svg
     this.svgSelection = d3.select(svg)
 
@@ -70,10 +71,12 @@ export default class MapRenderer {
     this.Start()
   }
 
+  //#region  Start/End
   Start() {
     this.sizeObserver.observe(this.svg as Element)
     this.LoadWorldMap()
     this.SetUpControls()
+    this.AnimationFrameCallback()
   }
 
   End() {
@@ -81,6 +84,20 @@ export default class MapRenderer {
       cancelAnimationFrame(this.requestAnimationFrameId)
     }
     this.sizeObserver.disconnect()
+  }
+  //#endregion
+
+  Update() {}
+
+  private DrawingLoop() {
+    this.Draw()
+    // Update Code here
+    this.Update()
+    this.AnimationFrameCallback()
+  }
+
+  private AnimationFrameCallback() {
+    this.requestAnimationFrameId = requestAnimationFrame(this.DrawingLoop.bind(this))
   }
 
   HandleResize() {
@@ -90,43 +107,42 @@ export default class MapRenderer {
       this.svgSize[1] = rect.height
       this.sphereRadius = this.CalculateRadius()
     }
-    this.DrawFrame()
   }
 
   CalculateRadius() {
     return Math.max(Math.min(this.svgSize[0], this.svgSize[1]) / 2 - this.offset, this.offset)
   }
 
-  SetUpControls() {
+  //#region Controls
+  private SetUpControls() {
     this.SetUpDragControls()
     this.SetUpScrollControls()
   }
 
-  SetUpDragControls() {
+  private SetUpDragControls() {
     const drag = d3.drag<SVGSVGElement, unknown>().on('drag', (event) => {
       if (!this.canInteract) return
       this.rotation[0] = (this.rotation[0] + event.dx * 0.5) % 360
       this.rotation[1] = (this.rotation[1] - event.dy * 0.5) % 360
-      this.DrawFrame()
     })
     this.svgSelection.call(drag)
   }
 
-  SetUpScrollControls() {
+  private SetUpScrollControls() {
     const zoom = d3
       .zoom<SVGSVGElement, unknown>()
       .scaleExtent([1, 2])
       .on('zoom', (event) => {
         if (!this.canInteract) return
         this.zoom = event.transform.k
-        this.DrawFrame()
       })
     this.svgSelection.call(zoom)
   }
 
-  SetUpHoverControls() {}
+  private SetUpHoverControls() {}
+  //#endregion
 
-  LoadWorldMap() {
+  private LoadWorldMap() {
     d3.json(this.worldMapLocation)
       .then((worldMap) => {
         this.worldMap = topojson.feature(worldMap as Topology, (worldMap as Topology).objects.land)
@@ -136,10 +152,7 @@ export default class MapRenderer {
       })
   }
 
-  DrawFrame() {
-    this.requestAnimationFrameId = requestAnimationFrame(this.Draw.bind(this))
-  }
-
+  //#region Drawing
   rendering_delta: number = 0.1
   private lastFrameTime = performance.now()
   calculated_fps: number = 0
@@ -268,6 +281,8 @@ export default class MapRenderer {
     stream.point(coordinate.longitude, coordinate.latitude)
     return isVisible ? 'visible' : 'hidden'
   }
+
+  //#endregion
 
   GoToDisplayablePoint(name: string) {
     console.log('Going to:', name)

@@ -15,9 +15,9 @@
 </template>
 
 <script lang="ts" setup>
-import LoadingScreen from '@/components/LoadingScreen.vue'
-import SplashScreen from '@/components/SplashScreen.vue'
-import MainMenuScreen from '@/components/MainMenuScreen.vue'
+import LoadingScreen from '@/components/views/menuView/LoadingScreen.vue'
+import SplashScreen from '@/components/views/menuView/SplashScreen.vue'
+import MainMenuScreen from '@/components/views/menuView/MainMenuScreen.vue'
 import { useRoute } from 'vue-router'
 import { ref } from 'vue'
 

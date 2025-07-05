@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import MapRenderer from '@/typescript/MapRenderer'
+import MapRenderer from '@/typescript/map/MapRenderer'
 
 const mainSvg = ref<SVGSVGElement | null>(null)
 
@@ -16,33 +16,51 @@ let mapRenderer: MapRenderer | null = null
 
 const dataPoints: { name: string; longitude: number; latitude: number; url: string }[] = [
   {
-    name: 'Uplink',
+    name: 'COMM-LINK 01',
     longitude: -3.7038,
     latitude: 40.4168,
     url: '/uplink'
   }, //Madrid
   {
-    name: 'Operations',
+    name: 'OPS-CATALOG 02',
     longitude: -77.0369,
     latitude: 38.9072,
     url: '/operations'
   }, //Washington
   {
-    name: 'Systems',
+    name: 'SERVICE RECORD 03',
     longitude: 114.0579,
     latitude: 22.5431,
     url: '/systems'
   }, //Shenzhen
   {
-    name: 'Intel',
+    name: 'DOSSIER 04',
     longitude: 139.6917,
     latitude: 35.6895,
     url: '/intel'
   }, //Tokyo
   {
-    name: 'Alerts',
+    name: 'BLACK-OPS LAB 05',
     longitude: 37.6173,
     latitude: 55.7558,
+    url: '/alerts'
+  }, //Tokyo
+  {
+    name: 'COMMAND UPLINK 06',
+    longitude: 50.6173,
+    latitude: -80.7558,
+    url: '/alerts'
+  }, //Tokyo
+  {
+    name: 'ARCHIVE ACCESS 07',
+    longitude: 290.6173,
+    latitude: -10.7558,
+    url: '/alerts'
+  },
+  {
+    name: 'OP-STATUS 08',
+    longitude: 37.6173,
+    latitude: 1.7558,
     url: '/alerts'
   } //Moscow
 ]
