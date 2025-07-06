@@ -12,22 +12,22 @@
       <MenuButton
         text="COMM-LINK 01"
         label="(Contact)"
-        @click="MapComponentRef?.goToPoint('Uplink')"
+        @click="MapComponentRef?.goToPoint('COMM-LINK 01')"
       />
       <MenuButton
         text="OPS-CATALOG 02"
         label="(Projects)"
-        @click="MapComponentRef?.goToPoint('Uplink')"
+        @click="MapComponentRef?.goToPoint('OPS-CATALOG 02')"
       />
       <MenuButton
         text="SERVICE RECORD 03"
         label="(Achievements)"
-        @click="MapComponentRef?.goToPoint('Uplink')"
+        @click="MapComponentRef?.goToPoint('SERVICE RECORD 03')"
       />
       <MenuButton
         text="DOSSIER 04"
         label="(About + Skills)"
-        @click="MapComponentRef?.goToPoint('Uplink')"
+        @click="MapComponentRef?.goToPoint('DOSSIER 04')"
       />
     </MenuButtonList>
     <!-- Map -->
@@ -45,25 +45,25 @@
       <MenuButton
         text="BLACK-OPS LAB 05"
         label="(Experiments / WIP)"
-        @click="MapComponentRef?.goToPoint('Uplink')"
+        @click="MapComponentRef?.goToPoint('BLACK-OPS LAB 05')"
       />
 
       <MenuButton
         text="COMMAND UPLINK 06"
         label="(News + Devlogs)"
-        @click="MapComponentRef?.goToPoint('Uplink')"
+        @click="MapComponentRef?.goToPoint('COMMAND UPLINK 06')"
       />
 
       <MenuButton
         text="ARCHIVE ACCESS 07"
         label="(Documents)"
-        @click="MapComponentRef?.goToPoint('Uplink')"
+        @click="MapComponentRef?.goToPoint('ARCHIVE ACCESS 07')"
       />
 
       <MenuButton
         text="OP-STATUS 08"
         label="(Availability)"
-        @click="MapComponentRef?.goToPoint('Uplink')"
+        @click="MapComponentRef?.goToPoint('OP-STATUS 08')"
       />
     </MenuButtonList>
   </main>

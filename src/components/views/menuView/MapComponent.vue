@@ -85,7 +85,7 @@ onBeforeUnmount(() => {
   mapRenderer?.End()
 })
 
-async function goToPoint(name: string) {
+function goToPoint(name: string) {
   mapRenderer?.GoToDisplayablePoint(name)
 }
 </script>

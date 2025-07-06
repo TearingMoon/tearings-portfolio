@@ -9,9 +9,8 @@ import {
   GetElementVisibility
 } from './rendering/Draw'
 
-import { MapState } from './state/MapState'
 import type { DisplayablePoint } from './types/DisplayablePoint'
-import type { Coordinate } from './types/Coordinate'
+import { Coordinate } from './types/Coordinate'
 
 import * as d3 from 'd3'
 
@@ -24,10 +23,13 @@ export default class MapRenderer {
   offset: number = 0
   rotation: [number, number] = [0, 0]
   size: [number, number] = [0, 0]
-  zoom: number = 1
+  _zoom: number = 1
 
   displayablePoints: DisplayablePoint[] = []
   worldMapLocation: string = '/json/land-110m.json'
+
+  autoRotateEnabled: boolean = true
+  userInteractionEnabled: boolean = true
 
   private worldMap:
     | GeoJSON.Feature<GeoJSON.GeometryObject, GeoJSON.GeoJsonProperties>
@@ -36,10 +38,32 @@ export default class MapRenderer {
 
   private sizeObserver: ResizeObserver = new ResizeObserver(this.HandleResize.bind(this))
   private shouldRedraw: boolean = false
+  private isUserInteracting: boolean = false
   private isUserHovering: boolean = false
+  private interactionTimeout: number | null = null
+
+  private zoomBehavior: d3.ZoomBehavior<SVGSVGElement, unknown> | null = null
+  private dragBehavior: d3.DragBehavior<SVGSVGElement, unknown, unknown> | null = null
+
+  private currentDP: DisplayablePoint | null = null
 
   get sphereRadius(): number {
     return Math.max(Math.min(this.size[0], this.size[1]) / 2 - this.offset, this.offset) * this.zoom
+  }
+
+  get zoom(): number {
+    return this._zoom
+  }
+
+  set zoom(value: number) {
+    this._zoom = value
+    const currentTransform = d3.zoomTransform(this.svgElement)
+    const newTransform = d3.zoomIdentity
+      .translate(currentTransform.x, currentTransform.y)
+      .scale(this._zoom)
+    if (this.zoomBehavior) {
+      this.svg.call(this.zoomBehavior.transform, newTransform)
+    }
   }
 
   constructor({
@@ -47,7 +71,8 @@ export default class MapRenderer {
     offset = 10,
     rotation = [0, -10],
     displayablePoints = [],
-    worldMapLocation = '/json/land-110m.json'
+    worldMapLocation = '/json/land-110m.json',
+    autoRotateEnabled = true
   }: MapRendererParams) {
     this.svgElement = svg
     this.svg = d3.select(svg)
@@ -58,26 +83,22 @@ export default class MapRenderer {
     this.size[1] = svg.clientHeight // Get the initial height of the SVG element
     this.displayablePoints = displayablePoints
     this.worldMapLocation = worldMapLocation
+    this.autoRotateEnabled = autoRotateEnabled
 
     this.Start()
   }
 
   async Start() {
-    this.sizeObserver.observe(this.svgElement as Element)
     this.worldMap = await LoadWorldMap(this.worldMapLocation)
-    SetupDrag(this.svg, this.OnDrag.bind(this), () => {
-      console.log('Drag Interaction started')
-    })
-    SetupZoom(this.svg, this.OnZoom.bind(this), () => {
-      console.log('Zoom interaction started')
-    })
 
-    this.svgElement.addEventListener('mouseenter', () => {
-      this.isUserHovering = true
-    })
-    this.svgElement.addEventListener('mouseleave', () => {
-      this.isUserHovering = false
-    })
+    this.sizeObserver.observe(this.svgElement as Element)
+    this.dragBehavior = SetupDrag(this.svg, this.OnDrag.bind(this), () => {})
+    this.zoomBehavior = SetupZoom(this.svg, this.OnZoom.bind(this), () => {})
+
+    this.svgElement.addEventListener('mouseenter', this.OnMouseEnter.bind(this))
+    this.svgElement.addEventListener('mouseleave', this.OnMouseLeave.bind(this))
+    this.svgElement.addEventListener('pointerdown', this.OnPointerDown.bind(this))
+    this.svgElement.addEventListener('pointerup', this.OnPointerUp.bind(this))
 
     this.AnimationFrameCallback()
   }
@@ -87,6 +108,11 @@ export default class MapRenderer {
       cancelAnimationFrame(this.animationFrameId)
     }
     this.sizeObserver.disconnect()
+
+    this.svgElement.removeEventListener('mouseenter', this.OnMouseEnter.bind(this))
+    this.svgElement.removeEventListener('mouseleave', this.OnMouseLeave.bind(this))
+    this.svgElement.removeEventListener('pointerdown', this.OnPointerDown.bind(this))
+    this.svgElement.removeEventListener('pointerup', this.OnPointerUp.bind(this))
   }
 
   private AnimationLoop() {
@@ -104,7 +130,7 @@ export default class MapRenderer {
   }
 
   private Update() {
-    if (!this.isUserHovering) {
+    if (!this.isUserInteracting && this.autoRotateEnabled && this.currentDP === null) {
       this.shouldRedraw = true
       this.rotation[0] = (this.rotation[0] + 0.1) % 360 // Rotate around the Y-axis
 
@@ -121,7 +147,9 @@ export default class MapRenderer {
       this.rotation
     )
     const path: d3.GeoPath = d3.geoPath().projection(projection).pointRadius(2)
+
     this.svg.selectAll('*').remove() // Clear the SVG before drawing
+
     this.svg
       .attr('preserveAspectRatio', 'xMidYMid meet')
       .attr('viewBox', `0 0 ${this.size[0]} ${this.size[1]}`)
@@ -133,8 +161,9 @@ export default class MapRenderer {
       projection,
       this.displayablePoints,
       GetElementVisibility,
-      (event) => {
-        console.log('Point clicked :', event)
+      (name) => {
+        console.log('Point clicked :', name)
+        this.GoToDisplayablePoint(name)
       }
     )
   }
@@ -149,19 +178,77 @@ export default class MapRenderer {
   }
 
   private OnDrag(event: any) {
+    if (!this.userInteractionEnabled) return
     this.shouldRedraw = true
     this.rotation[0] = (this.rotation[0] + event.dx * 0.5) % 360
     this.rotation[1] = (this.rotation[1] - event.dy * 0.5) % 360
+    this.currentDP = null // Reset current point on drag
   }
 
   private OnZoom(k: number) {
+    if (!this.userInteractionEnabled) return
     this.shouldRedraw = true
-    this.zoom = k
+    this._zoom = k
+    this.currentDP = null // Reset current point on drag
+  }
+
+  private OnMouseEnter() {
+    if (!this.userInteractionEnabled) return
+    this.isUserInteracting = true
+    this.isUserHovering = true
+    if (this.interactionTimeout) clearTimeout(this.interactionTimeout)
+  }
+
+  private OnMouseLeave() {
+    if (!this.userInteractionEnabled) return
+    if (this.interactionTimeout) clearTimeout(this.interactionTimeout)
+    this.interactionTimeout = window.setTimeout(() => {
+      this.isUserInteracting = false
+    }, 2000)
+    this.isUserHovering = false
+  }
+
+  private OnPointerDown() {
+    if (!this.userInteractionEnabled) return
+    if (!this.isUserHovering) {
+      this.OnMouseEnter()
+    }
+  }
+
+  private OnPointerUp() {
+    if (!this.userInteractionEnabled) return
+    if (!this.isUserHovering) {
+      this.OnMouseLeave()
+    }
   }
 
   GoToDisplayablePoint(name: string) {
-    console.log(`Going to displayable point: ${name}`)
-    //TODO: Implement logic to go to the displayable point
+    this.displayablePoints.forEach((point: DisplayablePoint) => {
+      if (point.name === name && this.currentDP !== point) {
+        this.currentDP = point
+        this.TransitionToCoord(new Coordinate(point.longitude, point.latitude))
+      } else if (this.currentDP === point) {
+        this.currentDP = null // Reset current point if already there
+      }
+    })
+  }
+
+  TransitionToCoord(coord: Coordinate, duration: number = 1000) {
+    this.userInteractionEnabled = false
+    d3.transition()
+      .duration(duration)
+      .tween('rotateZoom', () => {
+        const interpolator = d3.interpolateArray(this.rotation, [-coord.longitude, -coord.latitude])
+        const zoomInterp = d3.interpolateNumber(this.zoom, 2) // Reset zoom to 1
+        return (t: number) => {
+          this.rotation = interpolator(t) as [number, number]
+          this.zoom = zoomInterp(t)
+          this.shouldRedraw = true
+        }
+      })
+      .on('end', () => {
+        this.userInteractionEnabled = true
+      })
   }
 }
 
@@ -171,4 +258,5 @@ export interface MapRendererParams {
   rotation?: [number, number]
   displayablePoints?: DisplayablePoint[]
   worldMapLocation?: string
+  autoRotateEnabled?: boolean
 }

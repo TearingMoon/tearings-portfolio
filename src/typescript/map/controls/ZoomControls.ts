@@ -4,11 +4,12 @@ export function SetupZoom(
   svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
   onZoom: (k: number) => void,
   onInteraction: () => void
-) {
+): d3.ZoomBehavior<SVGSVGElement, unknown> {
   const zoom = d3
     .zoom<SVGSVGElement, unknown>()
     .scaleExtent([1, 2])
     .on('start', onInteraction)
     .on('zoom', (event) => onZoom(event.transform.k))
   svg.call(zoom)
+  return zoom
 }
