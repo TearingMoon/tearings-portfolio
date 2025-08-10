@@ -87,6 +87,7 @@ onBeforeUnmount(() => {
 
 function goToPoint(name: string) {
   mapRenderer?.GoToDisplayablePoint(name)
+  //Test Comment
 }
 </script>
 
