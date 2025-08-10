@@ -19,25 +19,25 @@ const dataPoints: { name: string; longitude: number; latitude: number; url: stri
     name: 'COMM-LINK 01',
     longitude: -3.7038,
     latitude: 40.4168,
-    url: '/uplink'
+    url: '/contact'
   }, //Madrid
   {
     name: 'OPS-CATALOG 02',
     longitude: -77.0369,
     latitude: 38.9072,
-    url: '/operations'
+    url: '/projects'
   }, //Washington
   {
     name: 'SERVICE RECORD 03',
     longitude: 114.0579,
     latitude: 22.5431,
-    url: '/systems'
+    url: '/achivements'
   }, //Shenzhen
   {
     name: 'DOSSIER 04',
     longitude: 139.6917,
     latitude: 35.6895,
-    url: '/intel'
+    url: '/about'
   }, //Tokyo
   {
     name: 'BLACK-OPS LAB 05',
@@ -49,7 +49,7 @@ const dataPoints: { name: string; longitude: number; latitude: number; url: stri
     name: 'COMMAND UPLINK 06',
     longitude: 50.6173,
     latitude: -80.7558,
-    url: '/alerts'
+    url: '/news'
   }, //Tokyo
   {
     name: 'ARCHIVE ACCESS 07',

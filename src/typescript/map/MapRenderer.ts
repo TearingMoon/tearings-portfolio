@@ -6,11 +6,14 @@ import {
   DrawWorldMap,
   DrawGraticule,
   DrawDisplayablePoints,
+  DrawTooltip,
   GetElementVisibility
 } from './rendering/Draw'
 
 import type { DisplayablePoint } from './types/DisplayablePoint'
 import { Coordinate } from './types/Coordinate'
+
+import router from '@/router'
 
 import * as d3 from 'd3'
 
@@ -22,6 +25,7 @@ export default class MapRenderer {
 
   offset: number = 0
   rotation: [number, number] = [0, 0]
+  readonly initialRotation: [number, number] = [0, 0]
   size: [number, number] = [0, 0]
   _zoom: number = 1
 
@@ -79,6 +83,8 @@ export default class MapRenderer {
 
     this.offset = offset
     this.rotation = rotation
+    this.initialRotation = rotation
+
     this.size[0] = svg.clientWidth // Get the initial width of the SVG element
     this.size[1] = svg.clientHeight // Get the initial height of the SVG element
     this.displayablePoints = displayablePoints
@@ -146,6 +152,7 @@ export default class MapRenderer {
       this.size,
       this.rotation
     )
+
     const path: d3.GeoPath = d3.geoPath().projection(projection).pointRadius(2)
 
     this.svg.selectAll('*').remove() // Clear the SVG before drawing
@@ -161,11 +168,18 @@ export default class MapRenderer {
       projection,
       this.displayablePoints,
       GetElementVisibility,
-      (name) => {
+      (d) => {
         console.log('Point clicked :', name)
-        this.GoToDisplayablePoint(name)
+        this.GoToDisplayablePoint(d.name)
       }
     )
+
+    if (this.currentDP !== null) {
+      DrawTooltip(this.currentDP, projection, this.svg, () => {
+        console.log(this.currentDP?.name)
+        if (this.currentDP?.url) router.push(this.currentDP.url)
+      })
+    }
   }
 
   private HandleResize() {

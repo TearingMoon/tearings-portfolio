@@ -49,7 +49,7 @@ export function DrawDisplayablePoints(
   ortoProjection: d3.GeoProjection,
   displayablePoints: DisplayablePoint[],
   getVisibility: (coord: Coordinate, projection: d3.GeoProjection) => 'visible' | 'hidden',
-  onClick: (name: string) => void
+  onClick: (name: DisplayablePoint) => void
 ) {
   svg
     .selectAll('.point')
@@ -71,7 +71,7 @@ export function DrawDisplayablePoints(
     .attr('stroke-width', 1)
     .attr('visibility', (d) => getVisibility(d, ortoProjection))
     .style('cursor', 'pointer')
-    .on('click', (_, d) => onClick(d.name))
+    .on('click', (_, d) => onClick(d))
 
   svg
     .selectAll('.point-label')
@@ -93,7 +93,58 @@ export function DrawDisplayablePoints(
     .style('cursor', 'pointer')
     .text((d) => d.name)
     .attr('visibility', (d) => getVisibility(d, ortoProjection))
-    .on('click', (_, d) => onClick(d.name))
+    .on('click', (_, d) => onClick(d))
+}
+
+export function DrawTooltip(
+  point: DisplayablePoint,
+  projection: d3.GeoProjection,
+  svg: d3.Selection<any, any, any, any>,
+  onClick: () => void
+) {
+  const projected = projection([point.longitude, point.latitude])
+  if (!projected) return
+  const [x, y] = projected
+
+  const tooltipOffsetX = 50
+  const tooltipOffsetY = 50
+  const tooltipWidth = 200
+  const tooltipHeight = 50
+
+  d3.select('#tooltip-connector').remove()
+
+  const tooltipGroup = svg.append('g').attr('id', 'tooltip-connector')
+
+  tooltipGroup
+    .append('line')
+    .attr('x1', x)
+    .attr('y1', y)
+    .attr('x2', x + tooltipOffsetX)
+    .attr('y2', y + tooltipOffsetY)
+    .attr('stroke', 'oklch(0.723 0.219 149.579)')
+    .attr('stroke-width', 1.5)
+
+  tooltipGroup
+    .append('rect')
+    .attr('x', x + tooltipOffsetX)
+    .attr('y', y + tooltipOffsetY - tooltipHeight / 2)
+    .attr('width', tooltipWidth)
+    .attr('height', tooltipHeight)
+    .attr('rx', 8)
+    .attr('fill', 'black')
+    .attr('stroke', 'oklch(0.723 0.219 149.579)')
+    .attr('stroke-width', 1)
+
+  tooltipGroup
+    .append('text')
+    .attr('x', x + tooltipOffsetX + tooltipWidth / 2)
+    .attr('y', y + tooltipOffsetY - tooltipHeight / 2 + 30)
+    .attr('fill', 'oklch(0.723 0.219 149.579)')
+    .attr('text-anchor', 'middle')
+    .style('cursor', 'pointer')
+    .style('font-size', '12px')
+    .text(`-- ENTER SECTOR --`)
+    .on('click', onClick)
 }
 
 export function GetElementVisibility(
