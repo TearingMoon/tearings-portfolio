@@ -15,21 +15,24 @@ defineProps<{
 <style scoped>
 progress {
   color: var(--color-green-500);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: none !important;
+  background-color: transparent;
 }
 
 /* Firefox */
-progress::-moz-progress-value {
-  background: var(--color-green-500);
-}
 progress::-moz-progress-bar {
-  background: transparent;
+  background-color: var(--color-green-500);
 }
 
 /* Chrome */
 progress::-webkit-progress-value {
   background: var(--color-green-500);
+  background-image: none;
 }
 progress::-webkit-progress-bar {
-  background: transparent;
+  background: transparent !important;
 }
 </style>
