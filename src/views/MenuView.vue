@@ -8,7 +8,7 @@
     >
       <LoadingScreen @finished-loading="hasFinishedLoading = true" v-if="!hasFinishedLoading" />
       <!--  -->
-      <SplashScreen v-else-if="!hasFinishedSpash" @finished-splash="hasFinishedSpash = true" />
+      <SplashScreen v-else-if="!hasFinishedSplash" @finished-splash="hasFinishedSplash = true" />
       <MainMenuScreen v-else />
     </Transition>
   </main>
@@ -24,10 +24,10 @@ import { ref } from 'vue'
 const route = useRoute()
 
 const hasFinishedLoading = ref(false)
-const hasFinishedSpash = ref(false)
-if (route.params.startAnimation) {
+const hasFinishedSplash = ref(false)
+if (route.params.fast == '1') {
   hasFinishedLoading.value = true
-  hasFinishedSpash.value = true
+  hasFinishedSplash.value = true
 }
 </script>
 

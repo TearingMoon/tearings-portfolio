@@ -31,7 +31,7 @@ const dataPoints: { name: string; longitude: number; latitude: number; url: stri
     name: 'SERVICE RECORD 03',
     longitude: 114.0579,
     latitude: 22.5431,
-    url: '/achivements'
+    url: '/achievements'
   }, //Shenzhen
   {
     name: 'DOSSIER 04',

@@ -173,13 +173,6 @@ export default class MapRenderer {
         this.GoToDisplayablePoint(d.name)
       }
     )
-
-    if (this.currentDP !== null) {
-      DrawTooltip(this.currentDP, projection, this.svg, () => {
-        console.log(this.currentDP?.name)
-        if (this.currentDP?.url) router.push(this.currentDP.url)
-      })
-    }
   }
 
   private HandleResize() {
@@ -262,6 +255,8 @@ export default class MapRenderer {
       })
       .on('end', () => {
         this.userInteractionEnabled = true
+        if (this.currentDP != null)
+        router.push(this.currentDP.url)
       })
   }
 }

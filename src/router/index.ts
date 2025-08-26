@@ -8,9 +8,12 @@ const router = createRouter({
       redirect: '/menu'
     },
     {
-      path: '/menu/:startAnimation?',
+      path: '/menu/:fast(0|1)?',
       name: 'menu',
-      component: () => import('../views/MenuView.vue')
+      component: () => import('../views/MenuView.vue'),
+      props: (route) => ({
+        fast: route.params.fast === '1'
+      })
     },
     {
       path: '/testing',
@@ -28,9 +31,9 @@ const router = createRouter({
       component: () => import('../views/ProjectsView.vue')
     },
     {
-      path: '/achivements',
-      name: 'achivements',
-      component: () => import('../views/AchivementsView.vue')
+      path: '/achievements',
+      name: 'achievements',
+      component: () => import('../views/AchievementsView.vue')
     },
     {
       path: '/about',
@@ -43,6 +46,18 @@ const router = createRouter({
       component: () => import('../views/NewsView.vue')
     }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  const goingToHome = to.name === 'menu'
+  const noFast = !to.params.fast || to.params.fast === '0'
+  const comingFromOutside = from.name && from.name !== 'menu'
+
+  if (goingToHome && noFast && comingFromOutside) {
+    next({ name: 'menu', params: { fast: '1' }, replace: true })
+  } else {
+    next()
+  }
 })
 
 export default router

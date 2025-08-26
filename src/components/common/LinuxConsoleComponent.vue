@@ -22,7 +22,7 @@
       </svg>
     </div>
     <!-- Console Container -->
-    <div class="w-full h-full flex overflow-y-auto flex-col customScrolbar">
+    <div class="w-full h-full flex overflow-y-auto flex-col customScrollbar">
       <div class="px-5 pt-5 text-left" ref="consoleContainer"></div>
       <div class="px-5 pb-5">
         <span class="text-green-400 w-full"> guest@localhost:~$ </span> {{ hiddenInputText }}
@@ -31,7 +31,7 @@
   </div>
 </template>
 
-<script setup lang="ts"> //TODO: Modiffy this component to fully use the screen
+<script setup lang="ts"> //TODO: Modify this component to fully use the screen
 import { ref, onMounted, useTemplateRef } from 'vue'
 
 enum commandType {
@@ -148,7 +148,7 @@ function clearCommand() {
 function startingMessageCommand() {
   if (consoleContainer.value) {
     consoleContainer.value.innerHTML += `<span class="text-xl font-bold">Welcome to my linux console! ;) </span><br>`
-    consoleContainer.value.innerHTML += `Try to type '<span class="text-yellow-500">help</span>' to see avaliable commands <br>`
+    consoleContainer.value.innerHTML += `Try to type '<span class="text-yellow-500">help</span>' to see available commands <br>`
     consoleContainer.value.innerHTML += `Or type '<span class="text-purple-500">about.sh</span>' to open my aboutMe <br>`
   }
 }
@@ -172,22 +172,22 @@ function workInProgressCommand() {
 
 <style scoped>
 /* width */
-.customScrolbar::-webkit-scrollbar {
+.customScrollbar::-webkit-scrollbar {
   width: 10px;
 }
 
 /* Track */
-.customScrolbar::-webkit-scrollbar-track {
+.customScrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
 
 /* Handle */
-.customScrolbar::-webkit-scrollbar-thumb {
+.customScrollbar::-webkit-scrollbar-thumb {
   background: var(--color-neutral-800);
 }
 
 /* Handle on hover */
-.customScrolbar::-webkit-scrollbar-thumb:hover {
+.customScrollbar::-webkit-scrollbar-thumb:hover {
   background: var(--color-neutral-700);
 }
 </style>
