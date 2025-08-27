@@ -3,7 +3,7 @@
     <h1 class="w-2/3 text-3xl p-5 md:text-7xl text-center bg-green-500 text-neutral-900 font-bold">
       David Torrubia
     </h1>
-    <h2 class="md:text-5xl text-green-500">David Torrubia Software & Engineering solutions</h2>
+    <h2 class="md:text-5xl text-green-500 text-center"> David Torrubia Software & Engineering solutions</h2>
   </main>
 </template>
 

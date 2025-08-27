@@ -3,6 +3,72 @@
     <SectionComponent>
       <h1>Our Projects</h1>
       <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
+      <p>Explore our latest projects and initiatives!</p>
     </SectionComponent>
   </main>
 </template>

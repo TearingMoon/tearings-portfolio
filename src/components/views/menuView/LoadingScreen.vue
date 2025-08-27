@@ -4,7 +4,7 @@
   >
     <div
       ref="lateralLoadingInfo"
-      class="absolute top-0 left-0 flex text-crt-sm flex-col gap-0 opacity-50"
+      class="absolute top-0 left-0 flex text-sm flex-col gap-0 opacity-50"
     >
       <span v-for="(text, index) in displayedText" :key="index" class="m-0">{{ text }}</span>
     </div>

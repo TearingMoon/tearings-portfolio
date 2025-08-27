@@ -24,25 +24,3 @@
     text-shadow: 0 0 2px lime;
   }
 }
-
-@layer components {
-  .text-crt-sm {
-    font-size: clamp(0.75rem, 1.5vw, 0.875rem);
-  }
-
-  .text-crt-base {
-    font-size: clamp(0.875rem, 2vw, 1rem);
-  }
-
-  .text-crt-lg {
-    font-size: clamp(1rem, 2.5vw, 1.125rem);
-  }
-
-  .text-crt-xl {
-    font-size: clamp(1.125rem, 3vw, 1.5rem);
-  }
-
-  .text-crt-2xl {
-    font-size: clamp(1.25rem, 3.5vw, 1.75rem);
-  }
-}

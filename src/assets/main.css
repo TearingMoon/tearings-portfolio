@@ -2,7 +2,7 @@
 @import 'animate.css';
 
 body {
-  background-color: var(--color-neutral-900);
+  background-color: var(--color-black);
   text-align: justify;
 }
 
@@ -15,4 +15,16 @@ body {
 .scrollAnimation_enter {
   opacity: 1;
   transform: translateY(0px);
+}
+
+*::-webkit-scrollbar {
+  background-color: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: green;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
 }

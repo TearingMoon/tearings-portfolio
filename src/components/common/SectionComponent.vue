@@ -26,8 +26,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
-.customScrollbar::-webkit-scrollbar {
+/* .customScrollbar::-webkit-scrollbar {
   background-color: transparent;
 }
 
@@ -37,6 +36,5 @@ onMounted(() => {
 
 .customScrollbar::-webkit-scrollbar-track {
   background: transparent;
-}
-
+} */
 </style>
