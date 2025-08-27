@@ -2,7 +2,7 @@
 @import 'animate.css';
 
 body {
-  background-color: rgb(23 23 23);
+  background-color: var(--color-black);
   text-align: justify;
 }
 
@@ -17,7 +17,14 @@ body {
   transform: translateY(0px);
 }
 
-body,
-html {
-  cursor: none;
+*::-webkit-scrollbar {
+  background-color: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: green;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
 }
