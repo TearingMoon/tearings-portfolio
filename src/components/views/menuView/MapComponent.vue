@@ -3,6 +3,9 @@
     <svg class="w-full h-full text-green-500" ref="mainSvg"></svg>
     <div class="flex items-center justify-center w-full h-full"></div>
     <!-- <div class="absolute bottom-0">fps: {{ mapRenderer?.calculated_fps }}</div> -->
+    <div class="absolute pointer-events-none bottom-1 left-1 text-green-500 opacity-50 text-xs">
+      <div v-for="(message, i) in messageList" :key="message + '-' + i">{{ message }}</div>
+    </div>
   </div>
 </template>
 
@@ -11,6 +14,8 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import MapRenderer from '@/typescript/map/MapRenderer'
 
 const mainSvg = ref<SVGSVGElement | null>(null)
+
+const messageList = ref<string[]>([])
 
 let mapRenderer: MapRenderer | null = null
 
@@ -43,7 +48,7 @@ const dataPoints: { name: string; longitude: number; latitude: number; url: stri
     name: 'BLACK-OPS LAB 05',
     longitude: 37.6173,
     latitude: 55.7558,
-    url: '/alerts'
+    url: '/experiments'
   }, //Tokyo
   {
     name: 'COMMAND UPLINK 06',
@@ -55,13 +60,13 @@ const dataPoints: { name: string; longitude: number; latitude: number; url: stri
     name: 'ARCHIVE ACCESS 07',
     longitude: 290.6173,
     latitude: -10.7558,
-    url: '/alerts'
+    url: '/documents'
   },
   {
     name: 'OP-STATUS 08',
     longitude: 37.6173,
     latitude: 1.7558,
-    url: '/alerts'
+    url: '/availability'
   } //Moscow
 ]
 
@@ -79,6 +84,14 @@ onMounted(() => {
       offset: 30
     })
   }
+
+  setInterval(() => {
+    messageList.value.push(GetRandomConsoleMessage())
+    if (messageList.value.length > 5) {
+      messageList.value.shift()
+    }
+    console.log(messageList.value)
+  }, 1000)
 })
 
 onBeforeUnmount(() => {
@@ -88,6 +101,84 @@ onBeforeUnmount(() => {
 function goToPoint(name: string) {
   mapRenderer?.GoToDisplayablePoint(name)
   //Test Comment
+}
+
+const warningMessages = [
+  'High memory usage detected.',
+  'Unstable network connection.',
+  'Unauthorized access attempt blocked.',
+  'Disk space running low.',
+  'Temperature threshold exceeded.',
+  'Process took too long to respond.',
+  'Suspicious activity detected.',
+  'Checksum mismatch found.',
+  'Data packet corrupted.',
+  'Power supply fluctuation detected.'
+]
+
+const systemMessages = [
+  'System reboot initiated.',
+  'Configuration changes applied.',
+  'Updates installed successfully.',
+  'Background services restarted.',
+  'System diagnostics completed.',
+  'Temporary files cleaned up.',
+  'New device driver loaded.',
+  'System clock synchronized.',
+  'Kernel modules recompiled.',
+  'Operation completed successfully.'
+]
+
+const authMessages = [
+  'User login successful.',
+  'User logout initiated.',
+  'Password change requested.',
+  'Multi-factor authentication passed.',
+  'Invalid login attempt detected.',
+  'User session expired.',
+  'Access token refreshed.',
+  'Permission granted.',
+  'Permission denied.'
+]
+
+const networkMessages = [
+  'Network connection established.',
+  'Packet loss detected.',
+  'Latency issues reported.',
+  'DNS query resolved.',
+  'Connection handshake completed.',
+  'Uplink channel synchronized.',
+  'Downlink stable at 512kbps.',
+  'Firewall rules updated.',
+  'VPN tunnel established.',
+  'Routing table refreshed.'
+]
+
+function GetRandomConsoleMessage() {
+  function GetRandomFromArray(data: string[]) {
+    return data[Math.floor(Math.random() * data.length)]
+  }
+
+  const prefix = ['[SYS]', '[NET]', '[AUTH]', '[WARN]']
+  let currentPrefix = GetRandomFromArray(prefix)
+
+  let currentMessage = ''
+  switch (currentPrefix) {
+    case '[SYS]':
+      currentMessage = GetRandomFromArray(systemMessages)
+      break
+    case '[NET]':
+      currentMessage = GetRandomFromArray(networkMessages)
+      break
+    case '[AUTH]':
+      currentMessage = GetRandomFromArray(authMessages)
+      break
+    case '[WARN]':
+      currentMessage = GetRandomFromArray(warningMessages)
+      break
+  }
+
+  return currentPrefix + ' ' + currentMessage
 }
 </script>
 

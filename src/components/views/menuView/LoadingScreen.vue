@@ -1,16 +1,16 @@
 <template>
   <main
-    class="w-screen h-screen flex flex-col items-center justify-center font-bold text-4xl gap-4"
+    class="w-screen h-screen flex flex-col items-center justify-center font-bold gap-2 md:gap-4"
   >
     <div
       ref="lateralLoadingInfo"
-      class="absolute top-0 left-0 flex text-sm flex-col gap-0 opacity-50"
+      class="absolute top-0 left-0 flex text-xs sm:text-sm flex-col gap-0 opacity-50"
     >
       <span v-for="(text, index) in displayedText" :key="index" class="m-0">{{ text }}</span>
     </div>
 
-    <h1>Starting{{ dots }}</h1>
-    <LoadingBarComponent :currentProgress="loadingBarProgress" class="w-2/3" />
+    <div class="text-2xl">Starting{{ dots }}</div>
+    <LoadingBarComponent :currentProgress="loadingBarProgress" class="w-2/3 sm:text-4xl" />
   </main>
 </template>
 
@@ -43,15 +43,15 @@ onMounted(() => {
   }, 250)
 
   ///Add random loading messages
-  let messageAmmount = 0
+  let messageAmount = 0
   const loadingMessageInterval = setInterval(() => {
     if (displayedText.value) {
       displayedText.value = displayedText.value.concat(GetRandomLoadingMessage())
-      messageAmmount++
+      messageAmount++
 
-      if (messageAmmount > props.maxMessages) {
+      if (messageAmount > props.maxMessages) {
         displayedText.value = []
-        messageAmmount = 0
+        messageAmount = 0
       }
     }
   }, 50)

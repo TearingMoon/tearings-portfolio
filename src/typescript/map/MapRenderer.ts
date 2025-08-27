@@ -169,7 +169,6 @@ export default class MapRenderer {
       this.displayablePoints,
       GetElementVisibility,
       (d) => {
-        console.log('Point clicked :', name)
         this.GoToDisplayablePoint(d.name)
       }
     )
@@ -255,8 +254,7 @@ export default class MapRenderer {
       })
       .on('end', () => {
         this.userInteractionEnabled = true
-        if (this.currentDP != null)
-        router.push(this.currentDP.url)
+        if (this.currentDP != null) router.push(this.currentDP.url)
       })
   }
 }

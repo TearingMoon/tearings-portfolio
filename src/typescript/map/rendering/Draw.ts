@@ -78,7 +78,7 @@ export function DrawDisplayablePoints(
     .data(displayablePoints)
     .enter()
     .append('text')
-    .attr('class', 'point-label')
+    .attr('class', 'point-label text-lg sm:text-3xl font-bold fill-green-500 ')
     .each(function (d) {
       const projected = ortoProjection([d.longitude, d.latitude])
       d3.select(this)
@@ -87,9 +87,6 @@ export function DrawDisplayablePoints(
     })
     .attr('dy', -10)
     .attr('text-anchor', 'middle')
-    .attr('fill', 'oklch(0.723 0.219 149.579)')
-    .attr('font-size', 30)
-    .attr('font-weight', 'bold')
     .style('cursor', 'pointer')
     .text((d) => d.name)
     .attr('visibility', (d) => getVisibility(d, ortoProjection))

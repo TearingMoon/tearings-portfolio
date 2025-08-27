@@ -53,7 +53,7 @@
           </a>
         </div>
         <div class="flex flex-col gap-1 md:w-3/5 w-full border-green-500 border-2 overflow-hidden">
-          <div class="bg-green-500 p-2 text-black font-bold w-full text-center text-2xl">
+          <div class="bg-green-500 p-2 text-black font-bold w-full text-center text-lg sm:text-2xl">
             Send me an email!
           </div>
           <div class="p-2">
@@ -61,18 +61,18 @@
               type="text"
               v-model="subject"
               placeholder="Subject"
-              class="text-xl w-full focus:border-transparent focus:ring-0 focus:outline-none font-bold"
+              class="sm:text-xl w-full focus:border-transparent focus:ring-0 focus:outline-none font-bold"
             />
             <textarea
               v-model="body"
               placeholder="Body"
-              class="w-full focus:border-transparent focus:ring-0 focus:outline-none customResizer overflow-hidden min-h-15"
+              class="text-sm sm:text-lg w-full focus:border-transparent focus:ring-0 focus:outline-none customResizer overflow-auto min-h-15"
             >
             </textarea>
             <ButtonComponent
               text="Send!"
+              text-class="w-full text-center text-lg sm:text-xl"
               @click="OpenEmailClient"
-              text-class="w-full text-center"
               class="w-full"
             />
           </div>
