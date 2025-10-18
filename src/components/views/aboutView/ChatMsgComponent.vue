@@ -2,6 +2,8 @@
   <div>
     <p class="w-full" :class="StyleBySender(props.sender)">
       &lt;{{ props.sender }}&gt;: {{ props.message }}
+
+      <a v-if="props.url" :href="props.url" target="_blank" class="text-blue-500 underline">Link</a>
     </p>
   </div>
 </template>
@@ -15,6 +17,10 @@ const props = defineProps({
   message: {
     type: String,
     required: true
+  },
+  url: {
+    type: String,
+    required: false
   }
 })
 
