@@ -1,0 +1,7 @@
+<template>
+  <span class="animate-pulse">...</span>
+</template>
+
+<script setup lang="ts"></script>
+
+<style scoped></style>

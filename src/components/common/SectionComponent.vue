@@ -16,10 +16,15 @@ import { useTemplateRef, onMounted, ref } from 'vue'
 const isContainerVisible = ref(false)
 const sectionContainer = useTemplateRef('sectionContainer')
 
+const $emit = defineEmits<{
+  (e: 'section-mounted'): void
+}>()
+
 onMounted(() => {
   if (sectionContainer.value) {
     setTimeout(() => {
       isContainerVisible.value = true
+      $emit('section-mounted')
     }, 1000)
   }
 })

@@ -90,7 +90,6 @@ onMounted(() => {
     if (messageList.value.length > 5) {
       messageList.value.shift()
     }
-    console.log(messageList.value)
   }, 1000)
 })
 

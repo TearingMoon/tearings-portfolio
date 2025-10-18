@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
 import CRTScreenEffect from './components/styling/CRTScreenEffect.vue'
+import WindowDecorationComponent from './components/common/WindowDecorationComponent.vue'
 
 if (import.meta.env.MODE === 'development') {
   console.log(
@@ -16,6 +17,7 @@ if (import.meta.env.MODE === 'development') {
 
 <template>
   <CRTScreenEffect />
+  <WindowDecorationComponent />
   <RouterView v-slot="{ Component }">
     <transition
       enter-active-class="animate__animated animate__fadeIn"

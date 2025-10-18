@@ -2,11 +2,6 @@
   <main
     class="flex flex-col lg:flex-row items-center justify-center h-screen w-screen overflow-hidden p-5 lg:p-10 gap-5 lg:gap-10"
   >
-    <p class="absolute bottom-0 text-xs lg:text-lg">
-      Connection from: {{ ip }} <span class="hidden sm:inline"> - Secure connection established </span>
-    </p>
-    <p class="absolute top-0 text-xs lg:text-lg">C2 - CRT v1.2.3</p>
-
     <!-- Buttons -->
     <MenuButtonList>
       <MenuButton
@@ -76,28 +71,15 @@ import MapComponent from '@/components/views/menuView/MapComponent.vue'
 import MenuButton from './MenuButton.vue'
 import MenuButtonList from './MenuButtonList.vue'
 
-const ip = ref('')
-
 const isDisplayClosed = ref(true)
 const MapComponentRef = useTemplateRef('MapComponentRef')
 
 onMounted(() => {
-  getIP()
-
   setTimeout(() => {
     isDisplayClosed.value = false
   }, 1000)
 })
 
-async function getIP() {
-  try {
-    const response = await fetch('https://api.ipify.org?format=json')
-    const data = await response.json()
-    ip.value = data.ip
-  } catch (error) {
-    console.error('Error fetching IP address:', error)
-  }
-}
 </script>
 
 <style scoped></style>
