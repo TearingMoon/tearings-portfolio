@@ -11,9 +11,9 @@
         </div>
         
         <div class="terminal-box border-2 border-green-500 p-4 w-full max-w-md text-left">
-          <p class="text-green-400">guest@localhost:~$ <span class="text-white">locate {{ currentPath }}</span></p>
-          <p class="text-red-400 mt-2">[ERROR] Path not found in filesystem</p>
-          <p class="text-yellow-400 mt-1">[WARN] Redirecting to safe zone...</p>
+          <p class="text-green-400">guest@localhost:~$ <span class="text-green-100">locate {{ currentPath }}</span></p>
+          <p class="text-green-500/70 mt-2">[ERROR] Path not found in filesystem</p>
+          <p class="text-green-400 mt-1">[WARN] Redirecting to safe zone...</p>
         </div>
 
         <ButtonComponent
@@ -71,23 +71,23 @@ onUnmounted(() => {
 @keyframes glitch {
   0%, 90%, 100% {
     text-shadow: 
-      2px 0 lime,
-      -2px 0 red;
+      2px 0 #22c55e,
+      -2px 0 #166534;
   }
   92% {
     text-shadow: 
-      -2px 0 lime,
-      2px 0 red;
+      -2px 0 #22c55e,
+      2px 0 #166534;
   }
   94% {
     text-shadow: 
-      2px 2px lime,
-      -2px -2px red;
+      2px 2px #22c55e,
+      -2px -2px #166534;
   }
   96% {
     text-shadow: 
-      -2px 2px lime,
-      2px -2px red;
+      -2px 2px #22c55e,
+      2px -2px #166534;
   }
 }
 

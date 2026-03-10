@@ -5,7 +5,9 @@
       ref="sectionContainer"
       :class="[isContainerVisible ? 'max-h-full' : 'max-h-0']"
     >
-      <slot></slot>
+      <div class="min-h-full">
+        <slot></slot>
+      </div>
     </div>
   </main>
 </template>
