@@ -16,6 +16,7 @@ if (import.meta.env.MODE === 'development') {
 </script>
 
 <template>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
   <CRTScreenEffect />
   <WindowDecorationComponent />
   <RouterView v-slot="{ Component }">
@@ -24,7 +25,7 @@ if (import.meta.env.MODE === 'development') {
       leave-active-class="animate__animated animate__fadeOut"
       mode="out-in"
     >
-      <component :is="Component" />
+      <component :is="Component" id="main-content" />
     </transition>
   </RouterView>
 </template>

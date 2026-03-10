@@ -16,5 +16,30 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  build: {
+    // Improve chunk splitting for better caching
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-vue': ['vue', 'vue-router'],
+          'vendor-d3': ['d3', 'topojson-client']
+        }
+      }
+    },
+    // Enable source maps for production debugging
+    sourcemap: false,
+    // Minification options
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
+      }
+    }
+  },
+  // Optimize dependencies
+  optimizeDeps: {
+    include: ['vue', 'vue-router', 'd3']
   }
 })

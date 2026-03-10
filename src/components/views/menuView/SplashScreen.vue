@@ -10,21 +10,20 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 
-const emit = defineEmits({
-  'finished-splash': () => true
-})
+const emit = defineEmits<{
+  (e: 'finished-splash'): void
+}>()
 
-const props = defineProps({
-  spashDuration: {
-    type: Number,
-    default: 2
-  }
+const props = withDefaults(defineProps<{
+  splashDuration?: number
+}>(), {
+  splashDuration: 2
 })
 
 onMounted(() => {
   setTimeout(() => {
     emit('finished-splash')
-  }, props.spashDuration * 1000)
+  }, props.splashDuration * 1000)
 })
 </script>
 
