@@ -4,3 +4,11 @@ declare module '*.vue' {
   const component: DefineComponent<{}, {}, any>
   export default component
 }
+
+// Extend vue-router types for route meta
+import 'vue-router'
+declare module 'vue-router' {
+  interface RouteMeta {
+    title?: string
+  }
+}

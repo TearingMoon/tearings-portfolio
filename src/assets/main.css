@@ -17,14 +17,68 @@ body {
   transform: translateY(0px);
 }
 
+/* Custom scrollbar */
 *::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
   background-color: transparent;
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: green;
+  background-color: var(--color-green-500, green);
+  border-radius: 0;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-green-400, lime);
 }
 
 *::-webkit-scrollbar-track {
   background: transparent;
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-green-500, green) transparent;
+}
+
+/* CRT shadow effect for interactive elements */
+.crt-shadow {
+  box-shadow: 
+    0 0 10px rgba(0, 255, 0, 0.2),
+    inset 0 0 20px rgba(0, 255, 0, 0.05);
+}
+
+/* Focus styles for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--color-green-500, green);
+  outline-offset: 2px;
+}
+
+/* Skip to content link for accessibility */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--color-green-500, green);
+  color: black;
+  padding: 8px 16px;
+  z-index: 10000;
+  transition: top 0.3s;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -18,6 +18,7 @@ const mainSvg = ref<SVGSVGElement | null>(null)
 const messageList = ref<string[]>([])
 
 let mapRenderer: MapRenderer | null = null
+let messageInterval: ReturnType<typeof setInterval> | null = null
 
 const dataPoints: { name: string; longitude: number; latitude: number; url: string }[] = [
   {
@@ -49,25 +50,25 @@ const dataPoints: { name: string; longitude: number; latitude: number; url: stri
     longitude: 37.6173,
     latitude: 55.7558,
     url: '/experiments'
-  }, //Tokyo
+  }, //Moscow
   {
     name: 'COMMAND UPLINK 06',
     longitude: 50.6173,
     latitude: -80.7558,
     url: '/news'
-  }, //Tokyo
+  }, //Antarctica
   {
     name: 'ARCHIVE ACCESS 07',
     longitude: 290.6173,
     latitude: -10.7558,
     url: '/documents'
-  },
+  }, //Atlantic
   {
     name: 'OP-STATUS 08',
     longitude: 37.6173,
     latitude: 1.7558,
     url: '/availability'
-  } //Moscow
+  } //Africa
 ]
 
 defineExpose({
@@ -85,17 +86,20 @@ onMounted(() => {
     })
   }
 
-  setInterval(() => {
+  messageInterval = setInterval(() => {
     messageList.value.push(GetRandomConsoleMessage())
     if (messageList.value.length > 5) {
       messageList.value.shift()
     }
-    console.log(messageList.value)
   }, 1000)
 })
 
 onBeforeUnmount(() => {
   mapRenderer?.End()
+  if (messageInterval) {
+    clearInterval(messageInterval)
+    messageInterval = null
+  }
 })
 
 function goToPoint(name: string) {

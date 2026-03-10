@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
 import CRTScreenEffect from './components/styling/CRTScreenEffect.vue'
+import WindowDecorationComponent from './components/common/WindowDecorationComponent.vue'
 
 if (import.meta.env.MODE === 'development') {
   console.log(
@@ -15,14 +16,16 @@ if (import.meta.env.MODE === 'development') {
 </script>
 
 <template>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
   <CRTScreenEffect />
+  <WindowDecorationComponent />
   <RouterView v-slot="{ Component }">
     <transition
       enter-active-class="animate__animated animate__fadeIn"
       leave-active-class="animate__animated animate__fadeOut"
       mode="out-in"
     >
-      <component :is="Component" />
+      <component :is="Component" id="main-content" />
     </transition>
   </RouterView>
 </template>
