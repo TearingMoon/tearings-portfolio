@@ -10,13 +10,16 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.1",
+    "@tresjs/core": "^5.8.3",
     "tailwindcss": "^4.3.1",
+    "three": "^0.185.0",
     "vue": "^3.5.38",
     "vue-i18n": "^11.4.6",
     "vue-router": "^5.1.0"
   },
   "devDependencies": {
     "@types/node": "^24.13.2",
+    "@types/three": "^0.185.1",
     "@vitejs/plugin-vue": "^6.0.7",
     "@vue/tsconfig": "^0.9.1",
     "typescript": "~6.0.2",
