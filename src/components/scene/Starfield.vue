@@ -1,144 +1,429 @@
 <script setup lang="ts">
-import { onBeforeUnmount, ref, watch } from "vue";
+import { onBeforeUnmount, watch } from "vue";
 import { useLoop } from "@tresjs/core";
 import {
   AdditiveBlending,
   BufferAttribute,
   BufferGeometry,
   Points,
-  PointsMaterial,
+  ShaderMaterial,
 } from "three";
 
-const props = withDefaults(
-  defineProps<{
-    count?: number;
-    spread?: number;
-    size?: number;
-    speed?: number;
-    revealDuration?: number;
-    active?: boolean;
-  }>(),
-  {
-    count: 2000,
-    spread: 30,
-    size: 0.04,
-    speed: 0.02,
-    revealDuration: 3,
-    active: false,
-  },
-);
+interface Props {
+  count?: number;
+  spread?: number;
+  size?: number;
+  speed?: number;
+  opacity?: number;
 
-const emit = defineEmits<{
-  revealed: [];
-  "update:progress": [progress: number];
-}>();
+  /**
+   * Controls how much of the starfield is visible.
+   * Expected range: 0 to 1.
+   */
+  revealProgress: number;
 
-const generationProgress = ref(0);
+  /**
+   * Point positions representing the target 3D shape.
+   * The array length must be count * 3.
+   * Use null to return to the original starfield.
+   */
+  targetPositions?: Float32Array | null;
 
-const geometry = new BufferGeometry();
-const positions = new Float32Array(props.count * 3);
-
-for (let index = 0; index < props.count; index += 1) {
-  const positionIndex = index * 3;
-
-  positions[positionIndex] = (Math.random() - 0.5) * props.spread;
-
-  positions[positionIndex + 1] = (Math.random() - 0.5) * props.spread;
-
-  positions[positionIndex + 2] = (Math.random() - 0.5) * props.spread;
+  /**
+   * Duration of the transition between shapes, in seconds.
+   */
+  morphDuration?: number;
 }
 
-geometry.setAttribute("position", new BufferAttribute(positions, 3));
-
-geometry.setDrawRange(0, 0);
-
-const material = new PointsMaterial({
-  color: 0xffffff,
-  size: props.size,
-  sizeAttenuation: true,
-  transparent: true,
+const props = withDefaults(defineProps<Props>(), {
+  count: 2000,
+  spread: 30,
+  size: 0.04,
+  speed: 0.02,
   opacity: 0.85,
-  depthWrite: false,
-  blending: AdditiveBlending,
+  targetPositions: null,
+  morphDuration: 1.5,
 });
 
-const Starfield = new Points(geometry, material);
+const emit = defineEmits<{
+  morphStart: [];
+  morphComplete: [];
+}>();
 
-let revealElapsed = 0;
-let isRevealing = false;
-let hasFinished = false;
+function clamp01(value: number): number {
+  return Math.min(Math.max(value, 0), 1);
+}
+
+function easeInOutCubic(value: number): number {
+  if (value < 0.5) {
+    return 4 * value * value * value;
+  }
+
+  return 1 - Math.pow(-2 * value + 2, 3) / 2;
+}
+
+function createStarfieldPositions(count: number, spread: number): Float32Array {
+  const positions = new Float32Array(count * 3);
+  const maximumRadius = spread / 2;
+
+  for (let index = 0; index < count; index += 1) {
+    const positionIndex = index * 3;
+
+    const azimuth = Math.random() * Math.PI * 2;
+    const polarCosine = Math.random() * 2 - 1;
+    const polarSine = Math.sqrt(1 - polarCosine * polarCosine);
+
+    /**
+     * Cube root produces a uniform distribution
+     * throughout the sphere's volume.
+     */
+    const radius = Math.cbrt(Math.random()) * maximumRadius;
+
+    positions[positionIndex] = radius * polarSine * Math.cos(azimuth);
+
+    positions[positionIndex + 1] = radius * polarSine * Math.sin(azimuth);
+
+    positions[positionIndex + 2] = radius * polarCosine;
+  }
+
+  return positions;
+}
+
+function createRevealThresholds(
+  positions: Float32Array,
+  count: number,
+  spread: number,
+): Float32Array {
+  const thresholds = new Float32Array(count);
+  const maximumRadius = spread / 2;
+
+  for (let index = 0; index < count; index += 1) {
+    const positionIndex = index * 3;
+
+    const x = positions[positionIndex];
+    const y = positions[positionIndex + 1];
+    const z = positions[positionIndex + 2];
+
+    const distance = Math.sqrt(x * x + y * y + z * z);
+
+    const normalizedDistance = distance / maximumRadius;
+
+    /**
+     * Small randomness prevents the reveal frontier
+     * from looking like a perfectly defined sphere.
+     */
+    const randomness = (Math.random() - 0.5) * 0.08;
+
+    thresholds[index] = Math.min(
+      Math.max(normalizedDistance + randomness, 0),
+      0.94,
+    );
+  }
+
+  return thresholds;
+}
+
+function createSizeVariations(count: number): Float32Array {
+  const result = new Float32Array(count);
+
+  for (let index = 0; index < count; index += 1) {
+    result[index] = 0.65 + Math.random() * 0.7;
+  }
+
+  return result;
+}
+
+const initialPositions = createStarfieldPositions(props.count, props.spread);
+
+const sourcePositions = initialPositions.slice();
+const morphTargetPositions = initialPositions.slice();
+
+const revealThresholds = createRevealThresholds(
+  initialPositions,
+  props.count,
+  props.spread,
+);
+
+const sizeVariations = createSizeVariations(props.count);
+
+const geometry = new BufferGeometry();
+
+const sourcePositionAttribute = new BufferAttribute(sourcePositions, 3);
+
+const targetPositionAttribute = new BufferAttribute(morphTargetPositions, 3);
+
+geometry.setAttribute("position", sourcePositionAttribute);
+
+geometry.setAttribute("aTargetPosition", targetPositionAttribute);
+
+geometry.setAttribute(
+  "aRevealThreshold",
+  new BufferAttribute(revealThresholds, 1),
+);
+
+geometry.setAttribute("aSizeVariation", new BufferAttribute(sizeVariations, 1));
+
+const uniforms = {
+  uRevealProgress: {
+    value: clamp01(props.revealProgress),
+  },
+  uMorphProgress: {
+    value: 1,
+  },
+  uPointSize: {
+    value: props.size,
+  },
+  uOpacity: {
+    value: props.opacity,
+  },
+};
+
+const material = new ShaderMaterial({
+  uniforms,
+
+  vertexShader: `
+uniform float uRevealProgress;
+uniform float uMorphProgress;
+uniform float uPointSize;
+
+attribute vec3 aTargetPosition;
+attribute float aRevealThreshold;
+attribute float aSizeVariation;
+
+varying float vAlpha;
+
+void main() {
+  float reveal = smoothstep(
+    aRevealThreshold,
+    aRevealThreshold + 0.1,
+    uRevealProgress
+  );
+
+  float morph = smoothstep(
+    0.0,
+    1.0,
+    uMorphProgress
+  );
+
+  vec3 finalPosition = mix(
+    position,
+    aTargetPosition,
+    morph
+  );
+
+  float emergence = smoothstep(
+    0.0,
+    1.0,
+    reveal
+  );
+
+  vec3 revealedPosition = mix(
+    vec3(0.0),
+    finalPosition,
+    emergence
+  );
+
+  vec4 viewPosition = modelViewMatrix
+    * vec4(revealedPosition, 1.0);
+
+  gl_Position = projectionMatrix
+    * viewPosition;
+
+  float perspectiveScale =
+    300.0 / max(-viewPosition.z, 0.1);
+
+  gl_PointSize =
+    uPointSize
+    * aSizeVariation
+    * perspectiveScale
+    * reveal;
+
+  vAlpha = reveal;
+}
+  `,
+
+  fragmentShader: `
+    uniform float uOpacity;
+
+    varying float vAlpha;
+
+    void main() {
+      vec2 centeredCoordinate =
+        gl_PointCoord - vec2(0.5);
+
+      float distanceFromCenter =
+        length(centeredCoordinate);
+
+      float circle = 1.0 - smoothstep(
+        0.35,
+        0.5,
+        distanceFromCenter
+      );
+
+      float alpha =
+        circle
+        * vAlpha
+        * uOpacity;
+
+      if (alpha <= 0.01) {
+        discard;
+      }
+
+      gl_FragColor = vec4(
+        vec3(1.0),
+        alpha
+      );
+    }
+  `,
+
+  transparent: true,
+  depthWrite: false,
+  depthTest: true,
+  blending: AdditiveBlending,
+  toneMapped: false,
+});
+
+const starfield = new Points(geometry, material);
+
+/**
+ * Morph targets may exceed the original geometry bounds.
+ * This prevents incorrect culling during transitions.
+ */
+starfield.frustumCulled = false;
+
+let morphElapsed = 0;
+let currentMorphProgress = 1;
+let isMorphing = false;
+
+/**
+ * Stores the currently rendered positions as the new source.
+ * This allows changing targets halfway through a transition
+ * without producing a visual jump.
+ */
+function bakeCurrentPositions(): void {
+  const progress = currentMorphProgress;
+
+  for (let index = 0; index < sourcePositions.length; index += 1) {
+    const source = sourcePositions[index];
+    const target = morphTargetPositions[index];
+
+    sourcePositions[index] = source + (target - source) * progress;
+  }
+
+  sourcePositionAttribute.needsUpdate = true;
+}
+
+function isValidTarget(positions: Float32Array): boolean {
+  const expectedLength = props.count * 3;
+
+  if (positions.length === expectedLength) {
+    return true;
+  }
+
+  console.warn(
+    `[Starfield] Invalid target position count. ` +
+      `Expected ${expectedLength} values, ` +
+      `received ${positions.length}.`,
+  );
+
+  return false;
+}
+
+function startMorph(nextPositions: Float32Array | null): void {
+  const resolvedTarget = nextPositions ?? initialPositions;
+
+  if (!isValidTarget(resolvedTarget)) {
+    return;
+  }
+
+  bakeCurrentPositions();
+
+  morphTargetPositions.set(resolvedTarget);
+  targetPositionAttribute.needsUpdate = true;
+
+  morphElapsed = 0;
+  currentMorphProgress = 0;
+  uniforms.uMorphProgress.value = 0;
+  isMorphing = true;
+
+  emit("morphStart");
+}
+
+function resetToStarfield(): void {
+  startMorph(null);
+}
 
 watch(
-  () => props.active,
-  (active) => {
-    if (active) {
-      startReveal();
-    } else {
-      resetReveal();
-    }
+  () => props.revealProgress,
+  (progress) => {
+    uniforms.uRevealProgress.value = clamp01(progress);
   },
   {
     immediate: true,
   },
 );
 
-function setGenerationProgress(progress: number): void {
-  generationProgress.value = Math.min(Math.max(progress, 0), 1);
+watch(
+  () => props.size,
+  (size) => {
+    uniforms.uPointSize.value = size;
+  },
+);
 
-  emit("update:progress", generationProgress.value);
-}
+watch(
+  () => props.opacity,
+  (opacity) => {
+    uniforms.uOpacity.value = clamp01(opacity);
+  },
+);
 
-function startReveal(): void {
-  revealElapsed = 0;
-  isRevealing = true;
-  hasFinished = false;
+watch(
+  () => props.targetPositions,
+  (targetPositions) => {
+    startMorph(targetPositions ?? null);
+  },
+);
 
-  geometry.setDrawRange(0, 0);
-  setGenerationProgress(0);
-}
-
-function resetReveal(): void {
-  revealElapsed = 0;
-  isRevealing = false;
-  hasFinished = false;
-
-  geometry.setDrawRange(0, 0);
-  setGenerationProgress(0);
+if (props.targetPositions !== null) {
+  startMorph(props.targetPositions);
 }
 
 const { onBeforeRender } = useLoop();
 
 onBeforeRender(({ delta, elapsed }) => {
-  Starfield.rotation.y += delta * props.speed;
+  starfield.rotation.y += delta * props.speed;
 
-  Starfield.rotation.x = Math.sin(elapsed * 0.1) * 0.03;
+  starfield.rotation.x = Math.sin(elapsed * 0.1) * 0.03;
 
-  if (!isRevealing) {
+  if (!isMorphing) {
     return;
   }
 
-  revealElapsed += delta;
+  morphElapsed += delta;
 
-  const progress = Math.min(revealElapsed / props.revealDuration, 1);
+  const normalizedProgress =
+    props.morphDuration <= 0
+      ? 1
+      : Math.min(morphElapsed / props.morphDuration, 1);
 
-  setGenerationProgress(progress);
+  currentMorphProgress = easeInOutCubic(normalizedProgress);
 
-  const visibleStars = Math.floor(props.count * generationProgress.value);
+  uniforms.uMorphProgress.value = currentMorphProgress;
 
-  geometry.setDrawRange(0, visibleStars);
-
-  if (generationProgress.value >= 1 && !hasFinished) {
-    isRevealing = false;
-    hasFinished = true;
-
-    emit("revealed");
+  if (normalizedProgress < 1) {
+    return;
   }
+
+  currentMorphProgress = 1;
+  uniforms.uMorphProgress.value = 1;
+  isMorphing = false;
+
+  emit("morphComplete");
 });
 
 defineExpose({
-  generationProgress,
-  startReveal,
-  resetReveal,
+  resetToStarfield,
+  startMorph,
 });
 
 onBeforeUnmount(() => {
@@ -148,5 +433,5 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <primitive :object="Starfield" />
+  <primitive :object="starfield" />
 </template>
