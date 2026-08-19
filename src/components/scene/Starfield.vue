@@ -173,6 +173,12 @@ const uniforms = {
   uTargetOffset: {
     value: new Vector3(0, 0, 0),
   },
+  uRotationX: {
+    value: 0,
+  },
+  uRotationY: {
+    value: 0,
+  },
 };
 
 const material = new ShaderMaterial({
@@ -353,9 +359,9 @@ if (props.targetPositions !== null) {
 const { onBeforeRender } = useLoop();
 
 onBeforeRender(({ delta, elapsed }) => {
-  starfield.rotation.y += delta * props.speed;
+  uniforms.uRotationY.value += delta * props.speed;
 
-  starfield.rotation.x = Math.sin(elapsed * 0.1) * 0.03;
+  uniforms.uRotationX.value = Math.sin(elapsed * 0.35) * 0.08;
 
   if (!isMorphing) {
     return;

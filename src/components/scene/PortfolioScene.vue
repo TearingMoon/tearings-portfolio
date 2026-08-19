@@ -63,6 +63,14 @@ const targetOffset = computed<[number, number, number]>(() => {
   }
 });
 
+const targetRotationSpeed = computed(() => {
+  if (props.targetShape === "starfield") {
+    return 0.02;
+  }
+
+  return 0.15;
+});
+
 const shapeCache = new Map<Exclude<StarShapeId, "starfield">, Float32Array>();
 
 interface ShapeDefinition {
@@ -156,5 +164,6 @@ watch(
     :target-positions="targetPositions"
     :morph-duration="1.4"
     :target-offset="targetOffset"
+    :speed="targetRotationSpeed"
   />
 </template>
