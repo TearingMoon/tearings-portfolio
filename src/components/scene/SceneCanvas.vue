@@ -3,6 +3,8 @@ import { TresCanvas } from "@tresjs/core";
 
 import type { ContentPosition, StarShapeId } from "@/router/meta";
 
+import { CAMERA_FOV, CAMERA_Z } from "./sceneConfig.ts";
+
 import PortfolioScene from "./PortfolioScene.vue";
 import { Vector3 } from "three";
 
@@ -17,7 +19,10 @@ defineProps<Props>();
 
 <template>
   <TresCanvas window-size :clear-alpha="0">
-    <TresPerspectiveCamera :position="new Vector3(0, 0, 8)" />
+    <TresPerspectiveCamera
+      :position="new Vector3(0, 0, CAMERA_Z)"
+      :fov="CAMERA_FOV"
+    />
 
     <PortfolioScene
       :reveal-progress="revealProgress"

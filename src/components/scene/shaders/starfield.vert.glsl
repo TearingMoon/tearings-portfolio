@@ -8,6 +8,9 @@ uniform vec3 uTargetOffset;
 uniform float uRotationX;
 uniform float uRotationY;
 
+uniform float uSourceScale;
+uniform float uTargetScale;
+
 attribute vec3 aTargetPosition;
 attribute float aRevealThreshold;
 attribute float aSizeVariation;
@@ -47,12 +50,25 @@ void main() {
     rotationY(uRotationY)
     * rotationX(uRotationX);
 
+  /*
+   * Scale and rotate the geometry around its local origin.
+   */
+  vec3 scaledSource =
+    position * uSourceScale;
+
+  vec3 scaledTarget =
+    aTargetPosition * uTargetScale;
+
   vec3 rotatedSource =
-    rotation * position;
+    rotation * scaledSource;
 
   vec3 rotatedTarget =
-    rotation * aTargetPosition;
+    rotation * scaledTarget;
 
+  /*
+   * Apply translation only after scaling and rotation.
+   * This keeps the model rotating around its own center.
+   */
   vec3 sourcePosition =
     rotatedSource + uSourceOffset;
 
@@ -66,8 +82,8 @@ void main() {
   );
 
   /*
-   * Move each star from the center to its actual position
-   * as it is revealed.
+   * Move each star from the center to its final position
+   * during the initial reveal.
    */
   float emergence =
     1.0 - pow(1.0 - reveal, 3.0);

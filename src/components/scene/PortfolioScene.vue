@@ -8,6 +8,15 @@ import {
   watch,
 } from "vue";
 
+import {
+  CAMERA_FOV,
+  CAMERA_Z,
+  MOBILE_BREAKPOINT,
+  MOBILE_HEADER_HEIGHT,
+  NAVBAR_HEIGHT,
+  TABLET_HEADER_HEIGHT,
+} from "./sceneConfig.ts";
+
 import type { ContentPosition, StarShapeId } from "@/router/meta";
 import { sampleModelPoints } from "@/components/scene/models/sampleModelPoints.ts";
 
@@ -19,23 +28,146 @@ interface Props {
   contentPosition: ContentPosition;
 }
 
-const isMobile = ref(false);
-let mobileMediaQuery: MediaQueryList | null = null;
+const viewportWidth = ref(1280);
+const viewportHeight = ref(720);
 
-function updateMobileState(): void {
-  isMobile.value = mobileMediaQuery?.matches ?? false;
+let resizeTimeout: ReturnType<typeof setTimeout> | null = null;
+
+function updateViewportSize(): void {
+  viewportWidth.value = window.innerWidth;
+  viewportHeight.value = window.innerHeight;
+}
+
+function handleResize(): void {
+  if (resizeTimeout !== null) {
+    clearTimeout(resizeTimeout);
+  }
+
+  resizeTimeout = setTimeout(() => {
+    updateViewportSize();
+  }, 100);
 }
 
 onMounted(() => {
-  mobileMediaQuery = window.matchMedia("(max-width: 767px)");
+  updateViewportSize();
 
-  updateMobileState();
-
-  mobileMediaQuery.addEventListener("change", updateMobileState);
+  window.addEventListener("resize", handleResize);
 });
 
 onBeforeUnmount(() => {
-  mobileMediaQuery?.removeEventListener("change", updateMobileState);
+  window.removeEventListener("resize", handleResize);
+
+  if (resizeTimeout !== null) {
+    clearTimeout(resizeTimeout);
+  }
+});
+
+const isMobile = computed(() => {
+  return viewportWidth.value < MOBILE_BREAKPOINT;
+});
+
+const viewSize = computed(() => {
+  const aspect = viewportWidth.value / viewportHeight.value;
+
+  const fovRadians = (CAMERA_FOV * Math.PI) / 180;
+
+  const visibleHeight = 2 * Math.tan(fovRadians / 2) * CAMERA_Z;
+
+  const visibleWidth = visibleHeight * aspect;
+
+  return {
+    width: visibleWidth,
+    height: visibleHeight,
+  };
+});
+
+const targetRadius = computed(() => {
+  const positions = targetPositions.value;
+
+  if (!positions) {
+    return 0;
+  }
+
+  let maximumSquaredDistance = 0;
+
+  for (let index = 0; index < positions.length; index += 3) {
+    const x = positions[index];
+    const y = positions[index + 1];
+    const z = positions[index + 2];
+
+    const squaredDistance = x * x + y * y + z * z;
+
+    maximumSquaredDistance = Math.max(maximumSquaredDistance, squaredDistance);
+  }
+
+  return Math.sqrt(maximumSquaredDistance);
+});
+
+const availableModelSize = computed(() => {
+  const viewportHeightPixels = viewportHeight.value;
+
+  if (isMobile.value) {
+    const headerHeight =
+      viewportWidth.value >= 640 ? TABLET_HEADER_HEIGHT : MOBILE_HEADER_HEIGHT;
+
+    const usableHeight = Math.max(
+      viewportHeightPixels - headerHeight - NAVBAR_HEIGHT,
+      0,
+    );
+
+    /*
+     * The router panel occupies the lower half of the
+     * usable area, leaving the upper half for the model.
+     */
+    const modelRegionHeight = usableHeight * 0.5;
+
+    const worldHeight =
+      viewSize.value.height * (modelRegionHeight / viewportHeightPixels);
+
+    /*
+     * Keep some margin around the model so point size,
+     * rotation and screen edges do not make it feel clipped.
+     */
+    return {
+      width: viewSize.value.width * 0.88,
+      height: worldHeight * 0.82,
+    };
+  }
+
+  /*
+   * On desktop the content panel occupies roughly 40%
+   * of the width, so reserve the opposite half for the model.
+   */
+  const usableHeight = Math.max(
+    viewportHeightPixels - TABLET_HEADER_HEIGHT - NAVBAR_HEIGHT,
+    0,
+  );
+
+  return {
+    width: viewSize.value.width * 0.52,
+    height:
+      viewSize.value.height * (usableHeight / viewportHeightPixels) * 0.88,
+  };
+});
+
+const targetScale = computed(() => {
+  if (targetPositions.value === null || targetRadius.value <= 0) {
+    return 1;
+  }
+
+  const diameter = targetRadius.value * 2;
+
+  const horizontalScale = availableModelSize.value.width / diameter;
+
+  const verticalScale = availableModelSize.value.height / diameter;
+
+  const fittingScale = Math.min(horizontalScale, verticalScale);
+
+  /*
+   * Models are already normalized by sampleModelPoints.
+   * Do not make them unnecessarily huge on large screens.
+   */
+  return Math.min(fittingScale, 1);
 });
 
 const props = defineProps<Props>();
@@ -48,19 +180,41 @@ const targetOffset = computed<[number, number, number]>(() => {
   if (props.targetShape === "starfield") {
     return [0, 0, 0];
   }
+
   if (isMobile.value) {
-    return [0, 1, 0];
-  }
-  switch (props.contentPosition) {
-    case "left":
-      return [3, 0, 0];
+    const headerHeight =
+      viewportWidth.value >= 640 ? TABLET_HEADER_HEIGHT : MOBILE_HEADER_HEIGHT;
 
-    case "right":
-      return [-3, 0, 0];
+    const usableHeight = Math.max(
+      viewportHeight.value - headerHeight - NAVBAR_HEIGHT,
+      0,
+    );
 
-    default:
-      return [0, 0, 0];
+    /*
+     * The model occupies the upper half of the usable area.
+     * Find the vertical center of that region in screen pixels.
+     */
+    const modelCenterPixels = headerHeight + usableHeight * 0.25;
+
+    /*
+     * Convert screen Y into world-space Y.
+     */
+    const normalizedY = modelCenterPixels / viewportHeight.value;
+
+    const worldY =
+      viewSize.value.height * 0.5 - normalizedY * viewSize.value.height;
+
+    return [0, worldY, 0];
   }
+
+  const horizontalOffset = Math.min(
+    Math.max(viewSize.value.width * 0.25, 2.2),
+    3.4,
+  );
+
+  return props.contentPosition === "left"
+    ? [horizontalOffset, 0, 0]
+    : [-horizontalOffset, 0, 0];
 });
 
 const targetRotationSpeed = computed(() => {
@@ -165,5 +319,6 @@ watch(
     :morph-duration="1.4"
     :target-offset="targetOffset"
     :speed="targetRotationSpeed"
+    :target-scale="targetScale"
   />
 </template>

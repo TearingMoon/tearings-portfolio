@@ -23,6 +23,7 @@ interface Props {
   targetPositions?: Float32Array | null;
   targetOffset?: [number, number, number];
   morphDuration?: number;
+  targetScale?: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -31,9 +32,12 @@ const props = withDefaults(defineProps<Props>(), {
   size: 0.04,
   speed: 0.02,
   opacity: 0.85,
+
   targetPositions: null,
-  morphDuration: 1.5,
   targetOffset: () => [0, 0, 0],
+  targetScale: 1,
+
+  morphDuration: 1.5,
 });
 
 const emit = defineEmits<{
@@ -173,6 +177,13 @@ const uniforms = {
   uTargetOffset: {
     value: new Vector3(0, 0, 0),
   },
+  uSourceScale: {
+    value: 1,
+  },
+
+  uTargetScale: {
+    value: 1,
+  },
   uRotationX: {
     value: 0,
   },
@@ -194,8 +205,6 @@ const material = new ShaderMaterial({
 
 const starfield = new Points(geometry, material);
 
-const targetOffsetVector = new Vector3(...props.targetOffset);
-
 /**
  * Morph targets may exceed the original geometry bounds.
  * This prevents incorrect culling during transitions.
@@ -214,28 +223,28 @@ let isMorphing = false;
 function bakeCurrentState(): void {
   const progress = currentMorphProgress;
 
-  /**
-   * Bake the currently rendered geometry without including
-   * translation offsets in the vertex positions.
-   */
-  for (let index = 0; index < sourcePositions.length; index += 1) {
-    const source = sourcePositions[index];
-    const target = morphTargetPositions[index];
+  const sourceScale = uniforms.uSourceScale.value;
 
-    sourcePositions[index] = source + (target - source) * progress;
+  const targetScale = uniforms.uTargetScale.value;
+
+  for (let index = 0; index < sourcePositions.length; index += 1) {
+    const scaledSource = sourcePositions[index] * sourceScale;
+
+    const scaledTarget = morphTargetPositions[index] * targetScale;
+
+    sourcePositions[index] =
+      scaledSource + (scaledTarget - scaledSource) * progress;
   }
 
-  sourcePositionAttribute.needsUpdate = true;
-
-  /**
-   * Bake the currently rendered offset independently from
-   * the geometry.
+  /*
+   * The baked geometry already contains its current scale,
+   * so the new source scale becomes neutral.
    */
-  uniforms.uSourceOffset.value.lerpVectors(
-    uniforms.uSourceOffset.value,
-    uniforms.uTargetOffset.value,
-    progress,
-  );
+  uniforms.uSourceScale.value = 1;
+
+  uniforms.uSourceOffset.value.lerp(uniforms.uTargetOffset.value, progress);
+
+  sourcePositionAttribute.needsUpdate = true;
 }
 
 function isValidTarget(positions: Float32Array): boolean {
@@ -257,6 +266,7 @@ function isValidTarget(positions: Float32Array): boolean {
 function startMorph(
   nextPositions: Float32Array | null,
   nextOffset: [number, number, number] = props.targetOffset,
+  nextScale = props.targetScale,
 ): void {
   const resolvedTarget = nextPositions ?? initialPositions;
 
@@ -264,26 +274,24 @@ function startMorph(
     return;
   }
 
-  /**
-   * Capture the exact currently rendered geometry and offset
-   * before changing the destination.
-   */
   bakeCurrentState();
 
   morphTargetPositions.set(resolvedTarget);
+
   targetPositionAttribute.needsUpdate = true;
 
-  /**
-   * The normal starfield always lives at the origin.
-   */
   if (nextPositions === null) {
     uniforms.uTargetOffset.value.set(0, 0, 0);
+
+    uniforms.uTargetScale.value = 1;
   } else {
     uniforms.uTargetOffset.value.set(
       nextOffset[0],
       nextOffset[1],
       nextOffset[2],
     );
+
+    uniforms.uTargetScale.value = nextScale;
   }
 
   morphElapsed = 0;
@@ -331,24 +339,10 @@ watch(
       props.targetOffset[0],
       props.targetOffset[1],
       props.targetOffset[2],
+      props.targetScale,
     ] as const,
-  ([positions, offsetX, offsetY, offsetZ], [previousPositions]) => {
-    /**
-     * Ignore offset changes while displaying the normal
-     * starfield, since it must always remain centered.
-     */
-    if (positions === null && previousPositions === null) {
-      return;
-    }
-
-    startMorph(positions ?? null, [offsetX, offsetY, offsetZ]);
-  },
-);
-
-watch(
-  () => props.targetOffset,
-  ([x, y, z]) => {
-    targetOffsetVector.set(x, y, z);
+  ([positions, offsetX, offsetY, offsetZ, scale]) => {
+    startMorph(positions ?? null, [offsetX, offsetY, offsetZ], scale);
   },
 );
 
