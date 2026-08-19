@@ -9,6 +9,9 @@ import {
   ShaderMaterial,
 } from "three";
 
+import vertexShader from "./shaders/starfield.vert.glsl?raw";
+import fragmentShader from "./shaders/starfield.frag.glsl?raw";
+
 interface Props {
   count?: number;
   spread?: number;
@@ -43,6 +46,7 @@ const props = withDefaults(defineProps<Props>(), {
   opacity: 0.85,
   targetPositions: null,
   morphDuration: 1.5,
+  targetOffset: [0, 0, 0] as [number, number, number],
 });
 
 const emit = defineEmits<{
@@ -180,102 +184,8 @@ const uniforms = {
 
 const material = new ShaderMaterial({
   uniforms,
-
-  vertexShader: `
-uniform float uRevealProgress;
-uniform float uMorphProgress;
-uniform float uPointSize;
-
-attribute vec3 aTargetPosition;
-attribute float aRevealThreshold;
-attribute float aSizeVariation;
-
-varying float vAlpha;
-
-void main() {
-  float reveal = smoothstep(
-    aRevealThreshold,
-    aRevealThreshold + 0.1,
-    uRevealProgress
-  );
-
-  float morph = smoothstep(
-    0.0,
-    1.0,
-    uMorphProgress
-  );
-
-  vec3 finalPosition = mix(
-    position,
-    aTargetPosition,
-    morph
-  );
-
-  float emergence = smoothstep(
-    0.0,
-    1.0,
-    reveal
-  );
-
-  vec3 revealedPosition = mix(
-    vec3(0.0),
-    finalPosition,
-    emergence
-  );
-
-  vec4 viewPosition = modelViewMatrix
-    * vec4(revealedPosition, 1.0);
-
-  gl_Position = projectionMatrix
-    * viewPosition;
-
-  float perspectiveScale =
-    300.0 / max(-viewPosition.z, 0.1);
-
-  gl_PointSize =
-    uPointSize
-    * aSizeVariation
-    * perspectiveScale
-    * reveal;
-
-  vAlpha = reveal;
-}
-  `,
-
-  fragmentShader: `
-    uniform float uOpacity;
-
-    varying float vAlpha;
-
-    void main() {
-      vec2 centeredCoordinate =
-        gl_PointCoord - vec2(0.5);
-
-      float distanceFromCenter =
-        length(centeredCoordinate);
-
-      float circle = 1.0 - smoothstep(
-        0.35,
-        0.5,
-        distanceFromCenter
-      );
-
-      float alpha =
-        circle
-        * vAlpha
-        * uOpacity;
-
-      if (alpha <= 0.01) {
-        discard;
-      }
-
-      gl_FragColor = vec4(
-        vec3(1.0),
-        alpha
-      );
-    }
-  `,
-
+  vertexShader: vertexShader,
+  fragmentShader: fragmentShader,
   transparent: true,
   depthWrite: false,
   depthTest: true,

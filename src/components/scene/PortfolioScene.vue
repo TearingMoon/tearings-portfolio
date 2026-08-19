@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { shallowRef, watch } from "vue";
+import { computed, shallowRef, watch } from "vue";
 
-import type { StarShapeId } from "@/router/meta";
+import type { ContentPosition, StarShapeId } from "@/router/meta";
 import { sampleModelPoints } from "@/components/scene/models/sampleModelPoints.ts";
 
 import Starfield from "./Starfield.vue";
@@ -9,6 +9,7 @@ import Starfield from "./Starfield.vue";
 interface Props {
   revealProgress: number;
   targetShape: StarShapeId;
+  contentPosition: ContentPosition;
 }
 
 const props = defineProps<Props>();
@@ -16,6 +17,19 @@ const props = defineProps<Props>();
 const STAR_COUNT = 25000;
 
 const targetPositions = shallowRef<Float32Array | null>(null);
+
+const targetOffset = computed<[number, number, number]>(() => {
+  switch (props.contentPosition) {
+    case "left":
+      return [3, 0, 0];
+
+    case "right":
+      return [-3, 0, 0];
+
+    default:
+      return [0, 0, 0];
+  }
+});
 
 const shapeCache = new Map<Exclude<StarShapeId, "starfield">, Float32Array>();
 
@@ -109,5 +123,6 @@ watch(
     :reveal-progress="revealProgress"
     :target-positions="targetPositions"
     :morph-duration="1.4"
+    :target-offset="targetOffset"
   />
 </template>

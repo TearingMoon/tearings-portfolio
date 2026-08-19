@@ -4,7 +4,7 @@ import "vue-router";
 
 export type StarShapeId = "starfield" | "profile" | "cube" | "satellite";
 
-export type ContentPosition = "left" | "right" | "center" | "full";
+export type ContentPosition = "left" | "right";
 
 export type ContentSurface = "none" | "glass";
 

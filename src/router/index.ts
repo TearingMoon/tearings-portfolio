@@ -15,7 +15,7 @@ const router = createRouter({
           component: () => import("@/views/HomeView.vue"),
           meta: {
             starShape: "starfield",
-            contentPosition: "center",
+            contentPosition: "left",
             contentSurface: "none",
           },
         },
@@ -35,7 +35,7 @@ const router = createRouter({
           component: () => import("@/views/ProjectsView.vue"),
           meta: {
             starShape: "cube",
-            contentPosition: "left",
+            contentPosition: "right",
             contentSurface: "glass",
           },
         },

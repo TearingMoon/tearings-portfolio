@@ -65,25 +65,28 @@ onUnmounted(() => {
 
 <template>
   <nav
-    class="fixed right-6 bottom-6 left-6 flex items-center justify-center gap-4  p-4"
+    class="fixed flex flex-col items-center justify-center gap-1 p-4"
     aria-label="Main navigation"
   >
-    <RouterLink
-      v-for="item in navigationItems"
-      :key="item.routeName"
-      :to="{ name: item.routeName }"
-      custom
-      v-slot="{ href, navigate, isExactActive }"
-    >
-      <a
-        :href="href"
-        class="text-xs tracking-[0.15em] sm:text-xl duration-200 hover:text-white font-terminal hover:transform hover:scale-110 transition-all"
-        :class="isExactActive ? 'text-white scale-110' : 'text-white/45'"
-        :aria-current="isExactActive ? 'page' : undefined"
-        @click="navigate"
+    <div class="flex flex-wrap items-center justify-center gap-4">
+      <RouterLink
+        v-for="item in navigationItems"
+        :key="item.routeName"
+        :to="{ name: item.routeName }"
+        custom
+        v-slot="{ href, navigate, isExactActive }"
       >
-        {{ item.label }}
-      </a>
-    </RouterLink>
+        <a
+          :href="href"
+          class="text-xs tracking-[0.15em] sm:text-xl duration-200 hover:text-white font-terminal hover:transform hover:scale-110 transition-all"
+          :class="isExactActive ? 'text-white scale-110' : 'text-white/45'"
+          :aria-current="isExactActive ? 'page' : undefined"
+          @click="navigate"
+        >
+          {{ item.label }}
+        </a>
+      </RouterLink>
+    </div>
+    <hr class="w-full h-0.5 sm:w-1/2 sm:h-1 bg-white" />
   </nav>
 </template>
