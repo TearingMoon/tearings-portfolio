@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { computed, shallowRef, watch } from "vue";
+import {
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  shallowRef,
+  watch,
+} from "vue";
 
 import type { ContentPosition, StarShapeId } from "@/router/meta";
 import { sampleModelPoints } from "@/components/scene/models/sampleModelPoints.ts";
@@ -12,6 +19,25 @@ interface Props {
   contentPosition: ContentPosition;
 }
 
+const isMobile = ref(false);
+let mobileMediaQuery: MediaQueryList | null = null;
+
+function updateMobileState(): void {
+  isMobile.value = mobileMediaQuery?.matches ?? false;
+}
+
+onMounted(() => {
+  mobileMediaQuery = window.matchMedia("(max-width: 767px)");
+
+  updateMobileState();
+
+  mobileMediaQuery.addEventListener("change", updateMobileState);
+});
+
+onBeforeUnmount(() => {
+  mobileMediaQuery?.removeEventListener("change", updateMobileState);
+});
+
 const props = defineProps<Props>();
 
 const STAR_COUNT = 25000;
@@ -19,6 +45,12 @@ const STAR_COUNT = 25000;
 const targetPositions = shallowRef<Float32Array | null>(null);
 
 const targetOffset = computed<[number, number, number]>(() => {
+  if (props.targetShape === "starfield") {
+    return [0, 0, 0];
+  }
+  if (isMobile.value) {
+    return [0, 1, 0];
+  }
   switch (props.contentPosition) {
     case "left":
       return [3, 0, 0];

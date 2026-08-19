@@ -7,6 +7,7 @@ import {
   BufferGeometry,
   Points,
   ShaderMaterial,
+  Vector3,
 } from "three";
 
 import vertexShader from "./shaders/starfield.vert.glsl?raw";
@@ -18,23 +19,9 @@ interface Props {
   size?: number;
   speed?: number;
   opacity?: number;
-
-  /**
-   * Controls how much of the starfield is visible.
-   * Expected range: 0 to 1.
-   */
   revealProgress: number;
-
-  /**
-   * Point positions representing the target 3D shape.
-   * The array length must be count * 3.
-   * Use null to return to the original starfield.
-   */
   targetPositions?: Float32Array | null;
-
-  /**
-   * Duration of the transition between shapes, in seconds.
-   */
+  targetOffset?: [number, number, number];
   morphDuration?: number;
 }
 
@@ -46,7 +33,7 @@ const props = withDefaults(defineProps<Props>(), {
   opacity: 0.85,
   targetPositions: null,
   morphDuration: 1.5,
-  targetOffset: [0, 0, 0] as [number, number, number],
+  targetOffset: () => [0, 0, 0],
 });
 
 const emit = defineEmits<{
@@ -180,6 +167,12 @@ const uniforms = {
   uOpacity: {
     value: props.opacity,
   },
+  uSourceOffset: {
+    value: new Vector3(0, 0, 0),
+  },
+  uTargetOffset: {
+    value: new Vector3(0, 0, 0),
+  },
 };
 
 const material = new ShaderMaterial({
@@ -194,6 +187,8 @@ const material = new ShaderMaterial({
 });
 
 const starfield = new Points(geometry, material);
+
+const targetOffsetVector = new Vector3(...props.targetOffset);
 
 /**
  * Morph targets may exceed the original geometry bounds.
@@ -210,9 +205,13 @@ let isMorphing = false;
  * This allows changing targets halfway through a transition
  * without producing a visual jump.
  */
-function bakeCurrentPositions(): void {
+function bakeCurrentState(): void {
   const progress = currentMorphProgress;
 
+  /**
+   * Bake the currently rendered geometry without including
+   * translation offsets in the vertex positions.
+   */
   for (let index = 0; index < sourcePositions.length; index += 1) {
     const source = sourcePositions[index];
     const target = morphTargetPositions[index];
@@ -221,6 +220,16 @@ function bakeCurrentPositions(): void {
   }
 
   sourcePositionAttribute.needsUpdate = true;
+
+  /**
+   * Bake the currently rendered offset independently from
+   * the geometry.
+   */
+  uniforms.uSourceOffset.value.lerpVectors(
+    uniforms.uSourceOffset.value,
+    uniforms.uTargetOffset.value,
+    progress,
+  );
 }
 
 function isValidTarget(positions: Float32Array): boolean {
@@ -239,21 +248,43 @@ function isValidTarget(positions: Float32Array): boolean {
   return false;
 }
 
-function startMorph(nextPositions: Float32Array | null): void {
+function startMorph(
+  nextPositions: Float32Array | null,
+  nextOffset: [number, number, number] = props.targetOffset,
+): void {
   const resolvedTarget = nextPositions ?? initialPositions;
 
   if (!isValidTarget(resolvedTarget)) {
     return;
   }
 
-  bakeCurrentPositions();
+  /**
+   * Capture the exact currently rendered geometry and offset
+   * before changing the destination.
+   */
+  bakeCurrentState();
 
   morphTargetPositions.set(resolvedTarget);
   targetPositionAttribute.needsUpdate = true;
 
+  /**
+   * The normal starfield always lives at the origin.
+   */
+  if (nextPositions === null) {
+    uniforms.uTargetOffset.value.set(0, 0, 0);
+  } else {
+    uniforms.uTargetOffset.value.set(
+      nextOffset[0],
+      nextOffset[1],
+      nextOffset[2],
+    );
+  }
+
   morphElapsed = 0;
   currentMorphProgress = 0;
+
   uniforms.uMorphProgress.value = 0;
+
   isMorphing = true;
 
   emit("morphStart");
@@ -288,9 +319,30 @@ watch(
 );
 
 watch(
-  () => props.targetPositions,
-  (targetPositions) => {
-    startMorph(targetPositions ?? null);
+  () =>
+    [
+      props.targetPositions,
+      props.targetOffset[0],
+      props.targetOffset[1],
+      props.targetOffset[2],
+    ] as const,
+  ([positions, offsetX, offsetY, offsetZ], [previousPositions]) => {
+    /**
+     * Ignore offset changes while displaying the normal
+     * starfield, since it must always remain centered.
+     */
+    if (positions === null && previousPositions === null) {
+      return;
+    }
+
+    startMorph(positions ?? null, [offsetX, offsetY, offsetZ]);
+  },
+);
+
+watch(
+  () => props.targetOffset,
+  ([x, y, z]) => {
+    targetOffsetVector.set(x, y, z);
   },
 );
 
@@ -326,6 +378,7 @@ onBeforeRender(({ delta, elapsed }) => {
 
   currentMorphProgress = 1;
   uniforms.uMorphProgress.value = 1;
+
   isMorphing = false;
 
   emit("morphComplete");
