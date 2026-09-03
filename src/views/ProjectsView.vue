@@ -1,27 +1,11 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, computed } from "vue";
 
 const searchQuery = ref("");
 
-watch(searchQuery, (newQuery) => {
-  handleSearchInput(newQuery);
-});
-
-function handleSearchInput(newQuery: string) {
-  filteredProjects.value = projects.value.filter(
-    (project) =>
-      project.title.toLowerCase().includes(newQuery.toLowerCase()) ||
-      project.description.toLowerCase().includes(newQuery.toLowerCase()) ||
-      project.tags.some((tag) =>
-        tag.toLowerCase().includes(newQuery.toLowerCase()),
-      ),
-  );
-}
-
 function openProject(project: Project) {
-  if (project.url && typeof window !== "undefined") {
-    window.open(project.url, "_blank");
-  }
+  console.log(`Opening project: ${project.title}`);
+  window.open(project.url);
 }
 
 class Project {
@@ -30,47 +14,43 @@ class Project {
   tags: string[];
   url?: string;
 
-  constructor(title: string, description: string, tags: string[]) {
+  constructor(
+    title: string,
+    description: string,
+    tags: string[],
+    url?: string,
+  ) {
     this.title = title;
     this.description = description;
     this.tags = tags;
+    this.url = url;
   }
 }
 
 const projects = ref<Project[]>([
-  new Project("Test Project", "Short description of project 1", [
-    "#C#",
-    "#Unity",
-    "#Simulation",
-  ]),
-  new Project("Project 2", "Short description of project 2", [
-    "#tag1",
-    "#tag2",
-    "#tag3",
-  ]),
-  new Project("Project 3", "Short description of project 3", [
-    "#tag1",
-    "#tag2",
-    "#tag3",
-  ]),
-  new Project("Project 3", "Short description of project 3", [
-    "#tag1",
-    "#tag2",
-    "#tag3",
-  ]),
-  new Project("Project 3", "Short description of project 3", [
-    "#tag1",
-    "#tag2",
-    "#tag3",
-  ]),
-  new Project("Project 3", "Short description of project 3", [
-    "#tag1",
-    "#tag2",
-    "#tag3",
-  ]),
+  new Project(
+    "Axion Engine",
+    "A custom game engine built with C++ and SDL2.",
+    ["#C++", "#SDL2", "#Engine", "#GameDev"],
+    "https://github.com/TearingMoon/AxionEngine",
+  ),
 ]);
 
-const filteredProjects = ref<Project[]>(projects.value);
+const filteredProjects = computed(() => {
+  const query = searchQuery.value.trim().toLowerCase();
+
+  if (!query) {
+    return projects.value;
+  }
+
+  return projects.value.filter((project) => {
+    return (
+      project.title.toLowerCase().includes(query) ||
+      project.description.toLowerCase().includes(query) ||
+      project.tags.some((tag) => tag.toLowerCase().includes(query))
+    );
+  });
+});
 </script>
 
 <template>
@@ -87,10 +67,10 @@ const filteredProjects = ref<Project[]>(projects.value);
       v-if="filteredProjects.length !== 0"
     >
       <div
-        class="flex flex-col text-white gap-1 cursor-pointer border border-white/20 p-2 rounded-lg transition-all duration-200"
+        class="flex flex-col text-white gap-1 cursor-pointer border border-white/10 px-4 py-3 transition-all duration-200 hover:border-white/30 hover:bg-white/3 rounded-lg"
         v-for="project in filteredProjects"
         :key="project.title"
-        :click="openProject(project)"
+        @click="openProject(project)"
       >
         <h1 class="font-terminal font-medium">{{ project.title }}</h1>
         <p class="text-white/70">

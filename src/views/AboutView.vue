@@ -1,8 +1,6 @@
 <template>
   <article class="flex min-h-full flex-col justify-center px-5 py-8 md:px-8">
-    <h1 class="mt-3 text-4xl font-medium text-white font-terminal">
-      About David
-    </h1>
+    <h1 class="mt-3 text-4xl font-medium text-white font-terminal">About me</h1>
     <hr class="my-4 h-0.5 w-full bg-white/50" />
     <p class="max-w-xl text-white/70">
       Im just a guy who loves to create things. I enjoy expermenting andtesting
