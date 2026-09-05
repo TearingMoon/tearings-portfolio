@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ContactLink from "@/components/contact/Contactlink.vue";
-import { Mail } from "lucide-vue-next";
+import { Mail } from "@lucide/vue";
 import { siGithub } from "simple-icons";
 </script>
 
