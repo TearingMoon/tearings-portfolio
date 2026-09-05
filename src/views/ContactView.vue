@@ -6,7 +6,7 @@ import { siGithub } from "simple-icons";
 
 <template>
   <article
-    class="flex min-h-full flex-col justify-center px-5 py-8 md:px-8 overflow-scroll"
+    class="flex min-h-full flex-col justify-center px-5 py-8 md:px-8"
   >
     <h1 class="mt-3 text-xl sm:text-4xl font-medium text-white font-terminal">
       {{ $t("contact.title") }}
