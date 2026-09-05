@@ -1,65 +1,80 @@
 <script setup lang="ts">
-import router from "@/router";
-import { onUnmounted } from "vue";
-import { useRoute } from "vue-router";
+import { onMounted, onUnmounted } from "vue";
+import { useI18n } from "vue-i18n";
+import { useRoute, useRouter } from "vue-router";
 
 interface NavigationItem {
-  label: string;
+  labelKey: string;
   routeName: string;
 }
 
+const { t } = useI18n({
+  useScope: "global",
+});
+
+const route = useRoute();
+const router = useRouter();
+
 const navigationItems: NavigationItem[] = [
   {
-    label: "Home",
+    labelKey: "views.home",
     routeName: "home",
   },
   {
-    label: "About",
+    labelKey: "views.about",
     routeName: "about",
   },
   {
-    label: "Projects",
+    labelKey: "views.projects",
     routeName: "projects",
   },
   {
-    label: "Contact",
+    labelKey: "views.contact",
     routeName: "contact",
   },
 ];
 
-//Hahdle navigatin with arrow keys
-const handleKeydown = (event: KeyboardEvent) => {
+function navigateToPrevious(): void {
+  const currentIndex = navigationItems.findIndex(
+    (item) => item.routeName === route.name,
+  );
+
+  const previousIndex =
+    (currentIndex - 1 + navigationItems.length) %
+    navigationItems.length;
+
+  router.push({
+    name: navigationItems[previousIndex].routeName,
+  });
+}
+
+function navigateToNext(): void {
+  const currentIndex = navigationItems.findIndex(
+    (item) => item.routeName === route.name,
+  );
+
+  const nextIndex =
+    (currentIndex + 1) % navigationItems.length;
+
+  router.push({
+    name: navigationItems[nextIndex].routeName,
+  });
+}
+
+function handleKeydown(event: KeyboardEvent): void {
   if (event.key === "ArrowLeft") {
     navigateToPrevious();
   } else if (event.key === "ArrowRight") {
     navigateToNext();
   }
-};
+}
 
-const route = useRoute();
+onMounted(() => {
+  window.addEventListener("keydown", handleKeydown);
+});
 
-const navigateToPrevious = () => {
-  const currentIndex = navigationItems.findIndex(
-    (item) => item.routeName === route.name,
-  );
-  const previousIndex =
-    (currentIndex - 1 + navigationItems.length) % navigationItems.length;
-  const previousRouteName = navigationItems[previousIndex].routeName;
-  router.push({ name: previousRouteName });
-};
-
-const navigateToNext = () => {
-  const currentIndex = navigationItems.findIndex(
-    (item) => item.routeName === route.name,
-  );
-  const nextIndex = (currentIndex + 1) % navigationItems.length;
-  const nextRouteName = navigationItems[nextIndex].routeName;
-  router.push({ name: nextRouteName });
-};
-
-addEventListener("keydown", handleKeydown);
 onUnmounted(() => {
-  removeEventListener("keydown", handleKeydown);
+  window.removeEventListener("keydown", handleKeydown);
 });
 </script>
 
@@ -68,7 +83,7 @@ onUnmounted(() => {
     class="fixed flex flex-col items-center justify-center gap-1 p-4"
     aria-label="Main navigation"
   >
-    <div class="flex flex-wrap items-center justify-center gap-4">
+    <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-8">
       <RouterLink
         v-for="item in navigationItems"
         :key="item.routeName"
@@ -78,15 +93,31 @@ onUnmounted(() => {
       >
         <a
           :href="href"
-          class="text-xs tracking-[0.15em] sm:text-xl duration-200 hover:text-white font-terminal hover:transform hover:scale-110 transition-all"
-          :class="isExactActive ? 'text-white scale-110' : 'text-white/45'"
-          :aria-current="isExactActive ? 'page' : undefined"
+          class="
+            font-terminal
+            text-xs
+            tracking-[0.15em]
+            transition-all
+            duration-200
+            hover:scale-110
+            hover:text-white
+            sm:text-xl
+          "
+          :class="
+            isExactActive
+              ? 'scale-110 text-white'
+              : 'text-white/45'
+          "
+          :aria-current="
+            isExactActive ? 'page' : undefined
+          "
           @click="navigate"
         >
-          {{ item.label }}
+          {{ t(item.labelKey) }}
         </a>
       </RouterLink>
     </div>
-    <hr class="w-full h-0.5 sm:w-1/2 sm:h-1 bg-white" />
+
+    <hr class="h-0.5 w-full bg-white sm:h-1 sm:w-1/2" />
   </nav>
 </template>

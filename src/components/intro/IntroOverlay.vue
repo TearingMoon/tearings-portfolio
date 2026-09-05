@@ -1,7 +1,9 @@
 <template>
   <div class="absolute inset-0 flex flex-col items-center justify-center">
     <AppProgressBar :progress="props.progress" class="w-56" />
-    <span class="text-white/50 font-terminal text-center w-56">Generating starfield</span>
+    <span class="text-white/50 font-terminal text-center w-56">{{
+      $t("intro.introMessage1")
+    }}</span>
   </div>
 </template>
 

@@ -24,7 +24,7 @@ const router = createRouter({
           name: "about",
           component: () => import("@/views/AboutView.vue"),
           meta: {
-            starShape: "profile",
+            starShape: "head",
             contentPosition: "left",
             contentSurface: "glass",
           },

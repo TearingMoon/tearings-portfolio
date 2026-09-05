@@ -1,3 +1,37 @@
 {
-    
+  "intro": {
+    "introMessage1": "Generando estrellas",
+    "introMessage2": "Cargando recursos",
+    "introMessage3": "Preparando entorno",
+    "introMessage4": "Procesando Shaders"
+  },
+
+  "views": {
+    "contact": "Contacto",
+    "about": "Sobre mí",
+    "projects": "Proyectos",
+    "home": "Inicio"
+  },
+
+  "contact": {
+    "title": "Contáctame!",
+    "description": "Siempre puedes encontrarme trabajando en nuevos proyectos, siéntete libre de contactarme sobre cualquier cosa que quieras. Siempre estoy abierto a nuevas oportunidades y colaboraciones."
+  },
+
+  "about": {
+    "title": "Sobre mí",
+    "description": "Soy solo un programador que ama crear cosas. Disfruto experimentando y probando ideas fuera de lo común. Tengo una pasión por los desafíos técnicos y la resolución de problemas, así como un fuerte deseo de aprender y crecer. Siempre estoy buscando nuevas oportunidades para expandir mis conocimientos y habilidades, y estoy emocionado de ver lo que el futuro me depara."
+  },
+
+  "projects": {
+    "title": "Proyectos",
+    "searchPlaceholder": "Buscar proyectos...",
+    "noResults": "No se encontraron proyectos."
+  },
+
+  "projectList": {
+    "axionEngine": {
+      "description": "Un motor de juego 2D y 3D multiplataforma, ligero y de alto rendimiento, escrito en C++."
+    }
+  }
 }

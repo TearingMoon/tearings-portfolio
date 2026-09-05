@@ -236,16 +236,16 @@ const shapeDefinitions: Record<
   Exclude<StarShapeId, "starfield">,
   ShapeDefinition
 > = {
-  profile: {
-    url: "/models/Pistol.glb",
+  head: {
+    url: "/models/Head.glb",
     size: 6,
   },
   cube: {
-    url: "/models/Pistol.glb",
+    url: "/models/Core.glb",
     size: 6,
   },
   satellite: {
-    url: "/models/Pistol.glb",
+    url: "/models/Satellite.glb",
     size: 6,
   },
 };

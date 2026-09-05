@@ -7,19 +7,17 @@ import { siGithub } from "simple-icons";
 <template>
   <article class="flex min-h-full flex-col justify-center px-5 py-8 md:px-8">
     <h1 class="mt-3 text-4xl font-medium text-white font-terminal">
-      Contact me!
+      {{ $t("contact.title") }}
     </h1>
     <hr class="my-4 h-0.5 w-full bg-white/50" />
     <p class="max-w-xl text-white/70">
-      You can always find me working in new projects, be free to contact me
-      about anything you want. I am always open to new opportunities and
-      collaborations.
+      {{ $t("contact.description") }}
     </p>
-    <div class="flex flex-col gap-2 mt-4">
+    <div class="flex flex-row sm:flex-col gap-2 mt-4">
       <ContactLink
         label="Email"
-        value="contact@example.com"
-        href="mailto:contact@example.com"
+        value="davidtorrubiadev@gmail.com"
+        href="mailto:davidtorrubiadev@gmail.com"
         :external="false"
       >
         <template #icon>

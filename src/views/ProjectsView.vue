@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import i18n from "@/i18n";
 import { ref, computed } from "vue";
 
 const searchQuery = ref("");
@@ -30,7 +31,7 @@ class Project {
 const projects = ref<Project[]>([
   new Project(
     "Axion Engine",
-    "A custom game engine built with C++ and SDL2.",
+    "projectList.axionEngine.description",
     ["#C++", "#SDL2", "#Engine", "#GameDev"],
     "https://github.com/TearingMoon/AxionEngine",
   ),
@@ -58,7 +59,7 @@ const filteredProjects = computed(() => {
     <div>
       <input
         class="bg-transparent border border-white/20 placeholder:text-white/50 text-white focus:outline-none w-full rounded-lg px-4 py-2"
-        placeholder="Search projects..."
+        :placeholder="$t('projects.searchPlaceholder')"
         v-model="searchQuery"
       />
     </div>
@@ -74,7 +75,7 @@ const filteredProjects = computed(() => {
       >
         <h1 class="font-terminal font-medium">{{ project.title }}</h1>
         <p class="text-white/70">
-          {{ project.description }}
+          {{ $t(project.description) }}
         </p>
         <div class="flex flex-row gap-1">
           <span
@@ -91,7 +92,7 @@ const filteredProjects = computed(() => {
       v-if="filteredProjects.length === 0"
       class="text-white/50 text-center mt-4 font-terminal"
     >
-      No projects found.
+      {{ $t("projects.noResults") }}
     </div>
   </main>
 </template>

@@ -22,11 +22,11 @@ withDefaults(defineProps<Props>(), {
     <div
       class="flex size-6 shrink-0 items-center justify-center text-white/60 transition-colors group-hover:text-white"
     >
-      <slot name="icon" />
+      <slot name="icon"> </slot>
     </div>
 
-    <div class="min-w-0">
-      <div class="font-terminal text-sm text-white">
+    <div class="hidden sm:block sm:min-w-0">
+      <div class="font-terminal text-sm text-white ">
         {{ label }}
       </div>
 

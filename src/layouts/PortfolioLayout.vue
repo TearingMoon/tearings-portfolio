@@ -6,6 +6,7 @@ import SceneCanvas from "@/components/scene/SceneCanvas.vue";
 import IntroOverlay from "@/components/intro/IntroOverlay.vue";
 import BrandTitle from "@/components/layout/BrandTitle.vue";
 import PortfolioNavigation from "@/components/layout/PortfolioNavigation.vue";
+import LanguageSelector from "@/components/layout/LanguageSelector.vue";
 
 import { usePortfolioIntro } from "@/composables/usePortfolioIntro";
 
@@ -175,5 +176,8 @@ onMounted(() => {
       "
       :inert="phase !== 'ready'"
     />
+
+    <!-- Persistent top Language Selector -->
+    <LanguageSelector class="absolute top-4 right-4 z-20" />
   </main>
 </template>

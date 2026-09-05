@@ -1,3 +1,37 @@
 {
-    
+  "intro": {
+    "introMessage1": "Generating stars",
+    "introMessage2": "Loading resources",
+    "introMessage3": "Preparing environment",
+    "introMessage4": "Processing Shaders"
+  },
+
+  "views": {
+    "contact": "Contact",
+    "about": "About",
+    "projects": "Projects",
+    "home": "Home"
+  },
+
+  "contact": {
+    "title": "Contact me!",
+    "description": "You can always find me working on new projects, feel free to contact me about anything you want. I'm always open to new opportunities and collaborations."
+  },
+
+  "about": {
+    "title": "About me",
+    "description": "I'm just a programmer who loves creating things. I enjoy experimenting and testing ideas outside the ordinary. I have a passion for technical challenges and problem-solving, as well as a strong desire to learn and grow. I'm always looking for new opportunities to expand my knowledge and skills, and I'm excited to see what the future has in store for me."
+  },
+
+  "projects": {
+    "title": "Projects",
+    "searchPlaceholder": "Search projects...",
+    "noResults": "No projects found."
+  },
+
+  "projectList": {
+    "axionEngine": {
+      "description": "A multiplatform 2D and 3D game engine, lightweight and high-performance, written in C++."
+    }
+  }
 }
