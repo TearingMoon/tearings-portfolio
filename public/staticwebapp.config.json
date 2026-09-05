@@ -1,5 +1,8 @@
 {
   "navigationFallback": {
     "rewrite": "/index.html"
+  },
+  "globalHeaders": {
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=()"
   }
 }

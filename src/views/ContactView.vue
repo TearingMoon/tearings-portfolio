@@ -5,12 +5,14 @@ import { siGithub } from "simple-icons";
 </script>
 
 <template>
-  <article class="flex min-h-full flex-col justify-center px-5 py-8 md:px-8">
-    <h1 class="mt-3 text-4xl font-medium text-white font-terminal">
+  <article
+    class="flex min-h-full flex-col justify-center px-5 py-8 md:px-8 overflow-scroll"
+  >
+    <h1 class="mt-3 text-xl sm:text-4xl font-medium text-white font-terminal">
       {{ $t("contact.title") }}
     </h1>
-    <hr class="my-4 h-0.5 w-full bg-white/50" />
-    <p class="max-w-xl text-white/70">
+    <hr class="sm:my-4 h-0.5 w-full bg-white/50" />
+    <p class="max-w-xl text-white/70 text-xs sm:text-base">
       {{ $t("contact.description") }}
     </p>
     <div class="flex flex-row sm:flex-col gap-2 mt-4">

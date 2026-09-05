@@ -4,7 +4,6 @@ import { ref, computed } from "vue";
 const searchQuery = ref("");
 
 function openProject(project: Project) {
-  console.log(`Opening project: ${project.title}`);
   window.open(project.url);
 }
 
@@ -57,7 +56,7 @@ const filteredProjects = computed(() => {
   <main class="flex flex-col px-5 py-8 md:px-8 gap-4">
     <div>
       <input
-        class="bg-transparent border border-white/20 placeholder:text-white/50 text-white focus:outline-none w-full rounded-lg px-4 py-2"
+        class="bg-transparent border border-white/20 placeholder:text-white/50 text-white focus:outline-none w-full rounded-lg px-4 py-2 text-sm sm:text-base"
         :placeholder="$t('projects.searchPlaceholder')"
         v-model="searchQuery"
       />
@@ -72,8 +71,8 @@ const filteredProjects = computed(() => {
         :key="project.title"
         @click="openProject(project)"
       >
-        <h1 class="font-terminal font-medium">{{ project.title }}</h1>
-        <p class="text-white/70">
+        <h1 class="font-terminal font-medium ">{{ project.title }}</h1>
+        <p class="text-white/70 hidden sm:block">
           {{ $t(project.description) }}
         </p>
         <div class="flex flex-row gap-1">
